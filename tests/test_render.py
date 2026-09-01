@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 import contextlib
+import hashlib
 import io
 import json
 import struct
@@ -112,6 +113,11 @@ class ValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "두 줄"):
             validate_document(document)
 
+    def test_cover_rejects_a_line_too_wide_for_the_canvas(self):
+        document = cover_document(title="가" * 16)
+        with self.assertRaisesRegex(ValueError, "한 줄"):
+            validate_document(document)
+
     def test_invalid_accent_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "accent"):
             validate_document(cover_document(accent="orange"))
@@ -139,6 +145,51 @@ class ValidationTests(unittest.TestCase):
         mismatched["chart"]["series"][0]["values"] = [92.0]
         with self.assertRaisesRegex(ValueError, "labels"):
             validate_document(mismatched)
+
+    def test_chart_requires_unit_text_labels_and_named_series(self):
+        missing_unit = data_document()
+        missing_unit["chart"].pop("unit")
+        with self.assertRaisesRegex(ValueError, "unit"):
+            validate_document(missing_unit)
+
+        invalid_label = data_document()
+        invalid_label["chart"]["labels"][0] = None
+        with self.assertRaisesRegex(ValueError, "labels"):
+            validate_document(invalid_label)
+
+        unnamed_series = data_document()
+        unnamed_series["chart"]["series"][0]["name"] = "   "
+        with self.assertRaisesRegex(ValueError, "name"):
+            validate_document(unnamed_series)
+
+    def test_chart_rejects_non_finite_values_and_null_bounds(self):
+        for value in (float("nan"), float("inf"), float("-inf")):
+            document = data_document()
+            document["chart"]["series"][0]["values"][0] = value
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "유한"):
+                validate_document(document)
+
+        document = data_document()
+        document["chart"]["y_min"] = None
+        with self.assertRaisesRegex(ValueError, "y_min"):
+            validate_document(document)
+
+    def test_chart_bounds_must_contain_every_value(self):
+        document = data_document()
+        document["chart"].update({"y_min": 0, "y_max": 50})
+        with self.assertRaisesRegex(ValueError, "범위"):
+            validate_document(document)
+
+    def test_takeaways_require_label_and_value_text(self):
+        document = data_document()
+        document["takeaways"] = [{"label": "표본"}]
+        with self.assertRaisesRegex(ValueError, "takeaway"):
+            validate_document(document)
+
+    def test_required_copy_fields_must_be_text(self):
+        document = cover_document(subtitle=42)
+        with self.assertRaisesRegex(ValueError, "subtitle"):
+            validate_document(document)
 
 
 class HtmlTests(unittest.TestCase):
@@ -180,6 +231,16 @@ class HtmlTests(unittest.TestCase):
 
         self.assertEqual(len(context["chart"]["series"][0]["bars"]), 3)
         self.assertTrue(all(bar["height"] >= 0 for bar in context["chart"]["series"][0]["bars"]))
+
+    def test_explicit_axis_bounds_are_preserved(self):
+        document = data_document()
+        document["chart"]["series"][0]["values"] = [25, 50, 100]
+        document["chart"].update({"y_min": 0, "y_max": 100})
+
+        context = build_context(document, Path("examples/figure-data.json"))
+
+        self.assertEqual(context["chart"]["y_min"], 0)
+        self.assertEqual(context["chart"]["y_max"], 100)
 
     def test_dark_cover_uses_exact_logo_asset_with_dark_treatment(self):
         html = render_html(object_cover_document(), Path("examples/cover-object.json"))
@@ -315,9 +376,15 @@ class OutputTests(unittest.TestCase):
             root = Path(directory)
             source = root / "cover.json"
             source.write_text(json.dumps(cover_document()), encoding="utf-8")
+            output = root / "out"
+            output.mkdir()
+            previous = output / "sample-cover.png"
+            previous.write_bytes(b"previous image")
 
             with self.assertRaisesRegex(ValueError, "크기"):
-                render_document(WrongSizePage(), source, root / "out", scale=1)
+                render_document(WrongSizePage(), source, output, scale=1)
+
+            self.assertEqual(previous.read_bytes(), b"previous image")
 
 
 class CliTests(unittest.TestCase):
@@ -434,6 +501,14 @@ class CliTests(unittest.TestCase):
 
 
 class ExampleTests(unittest.TestCase):
+    def test_logo_asset_matches_the_supplied_unit_tx_mark(self):
+        logo = Path(__file__).parents[1] / "assets" / "unit-tx-logo.png"
+
+        self.assertEqual(
+            hashlib.sha256(logo.read_bytes()).hexdigest(),
+            "57718cc67c3b14bd92b1caf8253873612cac9a975e132d5c57b7aa948cd228e1",
+        )
+
     def test_example_set_covers_all_templates(self):
         examples = Path(__file__).parents[1] / "examples"
         documents = [load_document(path) for path in sorted(examples.glob("*.json"))]

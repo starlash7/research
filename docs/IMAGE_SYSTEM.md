@@ -31,7 +31,7 @@ python3 -m venv .venv
 .venv/bin/playwright install chromium
 ```
 
-Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴이다. 저장소에는 렌더 재현성을 위해 WOFF2 파일만 포함한다. 원 프로젝트와 라이선스는 <https://github.com/orioncactus/pretendard>에서 확인할 수 있다.
+Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴이다. 저장소에는 렌더 재현성을 위한 WOFF2 파일과 `assets/Pretendard-LICENSE.txt`를 함께 포함한다. 원 프로젝트는 <https://github.com/orioncactus/pretendard>에서 확인할 수 있다.
 
 ## 실행
 
@@ -102,7 +102,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 
 ## 데이터 차트 필드
 
-`figure-data`는 `source`, `chart`, `takeaways`가 필수다. `chart.type`은 `line` 또는 `bar`, `labels`는 2-12개, `series`는 1-3개다. 각 시리즈의 `values` 수는 `labels` 수와 같아야 한다.
+`figure-data`는 `source`, `chart`, `takeaways`가 필수다. `chart.type`은 `line` 또는 `bar`, `labels`는 2-12개, `series`는 1-3개다. 각 시리즈의 `values` 수는 `labels` 수와 같아야 한다. 값은 유한한 숫자만 허용하며, `y_min` 또는 `y_max`를 직접 지정하면 모든 값이 그 범위 안에 있어야 한다.
 
 ```json
 {
@@ -156,7 +156,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 
 ## 글자와 안전 여백
 
-- 커버 제목: 67-68px, 최대 두 줄
+- 커버 제목: 67-68px, 최대 두 줄, 한 줄당 한글 15자 또는 영문 30자 폭 이내
 - 커버 부제: 28-29px
 - 차트 제목: 54px
 - 차트 축과 범례: 19-20px

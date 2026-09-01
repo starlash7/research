@@ -6,6 +6,7 @@ import math
 import re
 import struct
 import sys
+import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
@@ -54,6 +55,12 @@ TEMPLATES = {
         ("title", "source", "date", "chart", "takeaways"),
     ),
 }
+TEXT_FIELDS = {
+    "cover-editorial": ("eyebrow", "title", "subtitle", "date"),
+    "cover-object": ("eyebrow", "title", "subtitle", "date"),
+    "figure-framework": ("eyebrow", "title", "source", "date"),
+    "figure-data": ("title", "source", "date"),
+}
 
 
 def load_document(path: Path) -> dict[str, Any]:
@@ -77,6 +84,13 @@ def _require_text(document: dict[str, Any], key: str) -> str:
     return value.strip()
 
 
+def _display_width(value: str) -> int:
+    return sum(
+        2 if unicodedata.east_asian_width(character) in {"W", "F"} else 1
+        for character in value
+    )
+
+
 def _validate_chart(chart: Any) -> None:
     if not isinstance(chart, dict):
         raise ValueError("chart는 객체여야 합니다")
@@ -84,32 +98,52 @@ def _validate_chart(chart: Any) -> None:
         raise ValueError("chart.type은 line 또는 bar여야 합니다")
     labels = chart.get("labels")
     series = chart.get("series")
+    _require_text(chart, "unit")
     if not isinstance(labels, list) or not 2 <= len(labels) <= 12:
         raise ValueError("chart.labels는 2-12개여야 합니다")
+    if not all(isinstance(label, str) and label.strip() for label in labels):
+        raise ValueError("chart.labels는 비어 있지 않은 텍스트여야 합니다")
     if not isinstance(series, list) or not 1 <= len(series) <= 3:
         raise ValueError("chart.series는 1-3개여야 합니다")
+    all_values = []
     for item in series:
-        if not isinstance(item, dict) or not isinstance(item.get("name"), str):
-            raise ValueError("각 chart.series에는 name이 필요합니다")
+        if not isinstance(item, dict):
+            raise ValueError("각 chart.series는 객체여야 합니다")
+        if not isinstance(item.get("name"), str) or not item["name"].strip():
+            raise ValueError("각 chart.series에는 비어 있지 않은 name이 필요합니다")
         values = item.get("values")
         if not isinstance(values, list) or len(values) != len(labels):
             raise ValueError("각 chart.series values 수는 labels 수와 같아야 합니다")
-        if not all(isinstance(value, (int, float)) and not isinstance(value, bool) for value in values):
-            raise ValueError("chart.series values는 숫자여야 합니다")
+        if not all(
+            isinstance(value, (int, float))
+            and not isinstance(value, bool)
+            and math.isfinite(float(value))
+            for value in values
+        ):
+            raise ValueError("chart.series values는 유한한 숫자여야 합니다")
+        all_values.extend(float(value) for value in values)
         color = item.get("color")
         if color is not None and (
             not isinstance(color, str) or not re.fullmatch(r"#[0-9A-Fa-f]{6}", color)
         ):
             raise ValueError("chart.series color는 #RRGGBB 형식이어야 합니다")
     for key in ("y_min", "y_max"):
-        value = chart.get(key)
-        if value is not None and (
-            not isinstance(value, (int, float)) or isinstance(value, bool)
+        if key not in chart:
+            continue
+        value = chart[key]
+        if (
+            not isinstance(value, (int, float))
+            or isinstance(value, bool)
+            or not math.isfinite(float(value))
         ):
-            raise ValueError(f"chart.{key}은 숫자여야 합니다")
-    if chart.get("y_min") is not None and chart.get("y_max") is not None:
+            raise ValueError(f"chart.{key}은 유한한 숫자여야 합니다")
+    if "y_min" in chart and "y_max" in chart:
         if chart["y_min"] >= chart["y_max"]:
             raise ValueError("chart.y_max는 y_min보다 커야 합니다")
+    if "y_min" in chart and min(all_values) < float(chart["y_min"]):
+        raise ValueError("chart.y_min과 y_max 범위에 모든 값이 포함되어야 합니다")
+    if "y_max" in chart and max(all_values) > float(chart["y_max"]):
+        raise ValueError("chart.y_min과 y_max 범위에 모든 값이 포함되어야 합니다")
 
 
 def validate_document(document: dict[str, Any]) -> TemplateSpec:
@@ -124,10 +158,13 @@ def validate_document(document: dict[str, Any]) -> TemplateSpec:
         if key not in document or document[key] in (None, "", [], {}):
             raise ValueError(f"{key} 값이 필요합니다")
 
-    title = _require_text(document, "title")
+    text = {key: _require_text(document, key) for key in TEXT_FIELDS[template_name]}
+    title = text["title"]
     if template_name.startswith("cover-"):
         if title.count("\n") > 1:
             raise ValueError("커버 제목은 최대 두 줄까지 사용할 수 있습니다")
+        if any(_display_width(line) > 30 for line in title.splitlines()):
+            raise ValueError("커버 제목 한 줄은 한글 15자 또는 영문 30자 이하여야 합니다")
         if len(title.replace("\n", "")) > 48:
             raise ValueError("커버 제목은 공백 포함 48자 이하여야 합니다")
 
@@ -148,12 +185,16 @@ def validate_document(document: dict[str, Any]) -> TemplateSpec:
             _require_text(node, "body")
 
     if template_name == "figure-data":
-        _require_text(document, "source")
-        _require_text(document, "date")
         _validate_chart(document["chart"])
         takeaways = document["takeaways"]
         if not isinstance(takeaways, list) or not 1 <= len(takeaways) <= 3:
             raise ValueError("takeaways는 1-3개여야 합니다")
+        for item in takeaways:
+            if not isinstance(item, dict):
+                raise ValueError("각 takeaway는 객체여야 합니다")
+            for key in ("label", "value"):
+                if not isinstance(item.get(key), str) or not item[key].strip():
+                    raise ValueError(f"각 takeaway에는 비어 있지 않은 {key} 텍스트가 필요합니다")
 
     return spec
 
@@ -165,14 +206,21 @@ def _axis_bounds(chart: dict[str, Any]) -> tuple[float, float]:
     magnitude = 10 ** math.floor(math.log10(magnitude_source))
     step = magnitude / 5
 
-    y_min = float(chart.get("y_min", 0 if raw_min >= 0 else math.floor(raw_min / step) * step))
-    y_max = float(chart.get("y_max", math.ceil(raw_max / step) * step))
-    if y_max <= raw_max:
+    y_min_given = "y_min" in chart
+    y_max_given = "y_max" in chart
+    y_min = float(chart["y_min"]) if y_min_given else (
+        0 if raw_min >= 0 else math.floor(raw_min / step) * step
+    )
+    y_max = float(chart["y_max"]) if y_max_given else math.ceil(raw_max / step) * step
+    if not y_max_given and y_max <= raw_max:
         y_max += step
-    if y_min >= raw_min and raw_min < 0:
+    if not y_min_given and y_min >= raw_min and raw_min < 0:
         y_min -= step
     if y_max == y_min:
-        y_max = y_min + 1
+        if y_max_given:
+            y_min -= 1
+        else:
+            y_max += 1
     return y_min, y_max
 
 
@@ -410,12 +458,20 @@ def render_document(page: Any, source_path: Path, output_dir: Path, scale: int =
     page.wait_for_function(
         "Array.from(document.images).every(image => image.complete && image.naturalWidth > 0)"
     )
-    page.screenshot(path=str(png_path))
+    temporary_png = png_path.with_name(f".{png_path.stem}.tmp.png")
+    try:
+        page.screenshot(path=str(temporary_png))
 
-    expected = (spec.size[0] * scale, spec.size[1] * scale)
-    actual = png_size(png_path)
-    if actual != expected:
-        raise ValueError(f"PNG 크기가 올바르지 않습니다: {actual[0]}×{actual[1]}, expected {expected[0]}×{expected[1]}")
+        expected = (spec.size[0] * scale, spec.size[1] * scale)
+        actual = png_size(temporary_png)
+        if actual != expected:
+            raise ValueError(
+                "PNG 크기가 올바르지 않습니다: "
+                f"{actual[0]}×{actual[1]}, expected {expected[0]}×{expected[1]}"
+            )
+        temporary_png.replace(png_path)
+    finally:
+        temporary_png.unlink(missing_ok=True)
 
     update_manifest(
         output_dir,
