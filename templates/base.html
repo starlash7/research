@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    :root {
+      --canvas-width: {{ width }}px;
+      --canvas-height: {{ height }}px;
+      --accent: {{ accent }};
+    }
+  </style>
+  <title>{{ title }}</title>
+</head>
+<body>
+  {% block canvas %}{% endblock %}
+</body>
+</html>
+

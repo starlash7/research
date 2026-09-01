@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block canvas %}
+<main class="canvas cover-object-canvas">
+  <header class="object-top">
+    <p class="eyebrow">{{ eyebrow }}</p>
+    <span class="object-date num">{{ date }}</span>
+  </header>
+
+  <section class="object-copy">
+    <h1 class="object-title">{{ title }}</h1>
+    <p class="object-subtitle">{{ subtitle }}</p>
+  </section>
+
+  <div class="object-stage" aria-hidden="true">
+    {% if hero_uri %}
+      <img class="hero-image" src="{{ hero_uri }}" alt="">
+    {% else %}
+      <div class="fallback-object">
+        <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="">
+      </div>
+    {% endif %}
+  </div>
+
+  <footer class="object-footer">
+    <span class="brand-lockup">
+      <img class="logo logo-on-dark" src="../assets/unit-tx-logo.png" alt="UNIT TX">
+      <span>UNIT TX</span>
+    </span>
+    <span class="meta-row">
+      <span>{{ author|default("UNIT TX Research") }}</span>
+      <span class="meta-separator"></span>
+      <span>{{ topic|default("DIGITAL ASSETS") }}</span>
+    </span>
+  </footer>
+</main>
+{% endblock %}
+

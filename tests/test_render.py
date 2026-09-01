@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
-from render import TEMPLATES, safe_slug, validate_document
+from render import TEMPLATES, build_context, render_html, safe_slug, validate_document
 
 
 def cover_document(**overrides):
@@ -32,6 +33,34 @@ def data_document(**overrides):
             "series": [{"name": "생존율", "values": [92.0, 78.0, 63.0]}],
         },
         "takeaways": [{"label": "표본", "value": "1,539"}],
+    }
+    document.update(overrides)
+    return document
+
+
+def object_cover_document(**overrides):
+    document = cover_document(
+        template="cover-object",
+        slug="sample-object-cover",
+        title="스테이블코인은\n결제 레이어가 될 수 있을까",
+    )
+    document.update(overrides)
+    return document
+
+
+def framework_document(**overrides):
+    document = {
+        "template": "figure-framework",
+        "slug": "sample-framework",
+        "eyebrow": "TRANSACTION FLOW",
+        "title": "온체인 결제는 네 단계로 완결된다",
+        "source": "UNIT TX Research",
+        "date": "2026.09.01",
+        "nodes": [
+            {"title": "Intent", "body": "사용자가 결제 의사를 만든다."},
+            {"title": "Route", "body": "최적 경로와 자산을 선택한다."},
+            {"title": "Settle", "body": "네트워크에서 거래를 확정한다."},
+        ],
     }
     document.update(overrides)
     return document
@@ -92,6 +121,50 @@ class ValidationTests(unittest.TestCase):
         mismatched["chart"]["series"][0]["values"] = [92.0]
         with self.assertRaisesRegex(ValueError, "labels"):
             validate_document(mismatched)
+
+
+class HtmlTests(unittest.TestCase):
+    def test_html_autoescapes_user_copy(self):
+        document = cover_document(title="UNIT <script>alert(1)</script>")
+        html = render_html(document, Path("examples/cover-editorial.json"))
+        self.assertNotIn("<script>", html)
+        self.assertIn("&lt;script&gt;", html)
+
+    def test_line_chart_context_contains_svg_points_and_ticks(self):
+        document = data_document()
+        document["chart"]["labels"] = ["1Y", "2Y", "3Y", "4Y", "5Y", "6Y"]
+        document["chart"]["series"][0]["values"] = [92, 83, 74, 66, 59, 51]
+
+        context = build_context(document, Path("examples/figure-data.json"))
+
+        self.assertEqual(len(context["chart"]["series"][0]["points"]), 6)
+        self.assertEqual(len(context["chart"]["ticks"]), 5)
+        self.assertIn(",", context["chart"]["series"][0]["polyline"])
+
+    def test_bar_chart_context_contains_rectangles(self):
+        document = data_document()
+        document["chart"]["type"] = "bar"
+
+        context = build_context(document, Path("examples/figure-data.json"))
+
+        self.assertEqual(len(context["chart"]["series"][0]["bars"]), 3)
+        self.assertTrue(all(bar["height"] >= 0 for bar in context["chart"]["series"][0]["bars"]))
+
+    def test_dark_cover_uses_exact_logo_asset_with_dark_treatment(self):
+        html = render_html(object_cover_document(), Path("examples/cover-object.json"))
+        self.assertIn("unit-tx-logo.png", html)
+        self.assertIn("logo-on-dark", html)
+
+    def test_framework_renders_nodes_and_connectors(self):
+        html = render_html(framework_document(), Path("examples/figure-framework.json"))
+        self.assertEqual(html.count('class="framework-node"'), 3)
+        self.assertIn("flow-connector", html)
+        self.assertIn("UNIT TX Research", html)
+
+    def test_hero_image_cannot_escape_input_directory(self):
+        document = object_cover_document(hero_image="../outside.png")
+        with self.assertRaisesRegex(ValueError, "hero_image"):
+            build_context(document, Path("examples/cover-object.json"))
 
 
 if __name__ == "__main__":

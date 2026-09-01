@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block canvas %}
+<main class="canvas cover-editorial-canvas">
+  <header class="cover-top">
+    <span class="cover-pill">{{ eyebrow }}</span>
+    <span class="cover-index">{{ index_label|default("RESEARCH IMAGE") }}</span>
+  </header>
+
+  <section class="editorial-copy">
+    <h1 class="editorial-title">{{ title }}</h1>
+    <p class="editorial-subtitle">{{ subtitle }}</p>
+    <div class="meta-row editorial-byline">
+      <span>{{ author|default("UNIT TX Research") }}</span>
+      <span class="meta-separator"></span>
+      <span class="num">{{ date }}</span>
+    </div>
+  </section>
+
+  <div class="editorial-visual" aria-hidden="true">
+    <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="">
+  </div>
+
+  <footer class="cover-footer">
+    <span class="brand-lockup">
+      <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="UNIT TX">
+      <span>UNIT TX</span>
+    </span>
+    <span class="editorial-topic">{{ topic|default("RESEARCH") }}</span>
+  </footer>
+</main>
+{% endblock %}
+

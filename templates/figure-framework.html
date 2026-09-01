@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block canvas %}
+<main class="canvas figure-canvas">
+  <header class="figure-header framework-header">
+    <p class="eyebrow">{{ eyebrow }}</p>
+    <div class="figure-title-row">
+      <h1 class="figure-title">{{ title }}</h1>
+      <span class="date-chip num">{{ date }}</span>
+    </div>
+    <p class="source-line">Source: {{ source }}</p>
+  </header>
+
+  <section class="framework-flow" aria-label="{{ title }}">
+    {% for node in nodes %}
+      <article class="framework-node">
+        {% if node.key is defined and node.key %}<span class="node-key">{{ node.key }}</span>{% endif %}
+        <h2 class="node-title{% if node.key is defined and node.key %} with-key{% endif %}">{{ node.title }}</h2>
+        <p class="node-body">{{ node.body }}</p>
+      </article>
+      {% if not loop.last %}<span class="flow-connector" aria-hidden="true"></span>{% endif %}
+    {% endfor %}
+  </section>
+
+  <section class="framework-summary">
+    <span class="summary-label">Key read</span>
+    <p class="summary-copy">{{ summary|default("각 단계의 마찰을 줄일수록 온체인 경험은 일반 결제에 가까워진다.") }}</p>
+  </section>
+
+  <footer class="figure-footer">
+    <span>UNIT TX Research</span>
+    <span class="brand-lockup">
+      <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="UNIT TX">
+      <span>UNIT TX</span>
+    </span>
+  </footer>
+</main>
+{% endblock %}
