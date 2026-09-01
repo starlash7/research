@@ -48,14 +48,14 @@ The supplied 738×694 UNIT TX symbol is the canonical logo asset. It remains una
 
 The initial palette is intentionally restrained:
 
-- paper: `#F3F1EC`
-- white: `#FFFFFF`
-- ink: `#0A0A0A`
-- muted ink: `#6E6B65`
-- signal orange: `#FF4D00`
-- electric blue: `#2563EB`
-- positive: `#07883F`
-- negative: `#D92D3A`
+- paper: `#F4F3EF`
+- surface: `#FBFAF7`
+- ink: `#0B0C0D`
+- muted ink: `#696863`
+- signal orange: `#E84B18`
+- electric blue: `#2563A6`
+- positive: `#167547`
+- negative: `#C63E46`
 
 Pretendard Variable is the primary Korean and Latin typeface. A local font asset is bundled so browser and machine differences cannot change line breaks. Monospace labels use the platform monospace fallback only for short metadata.
 

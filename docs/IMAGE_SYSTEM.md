@@ -67,6 +67,39 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 
 커버는 `eyebrow`, `subtitle`, 선택 `author`를 추가한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 UNIT TX 심볼에서 파생한 CSS 오브젝트가 표시된다.
 
+### 밝은 에디토리얼 커버
+
+```json
+{
+  "template": "cover-editorial",
+  "slug": "onchain-adoption-cover",
+  "eyebrow": "UNIT TX SPECIAL RESEARCH",
+  "index_label": "UNIT TX / RESEARCH",
+  "title": "온체인 금융은\n어디에서 실사용을 만나는가",
+  "subtitle": "결제, 국경 간 송금, 자산 운용에서 나타나는 다음 채택 곡선",
+  "author": "UNIT TX Research",
+  "date": "2026.09.01",
+  "topic": "ONCHAIN ADOPTION"
+}
+```
+
+### 어두운 오브젝트 커버
+
+```json
+{
+  "template": "cover-object",
+  "slug": "stablecoin-payment-cover",
+  "eyebrow": "DIGITAL ASSETS RESEARCH",
+  "title": "스테이블코인은\n결제 레이어가 될 수 있을까",
+  "subtitle": "보유 수단을 넘어 실제 거래 인프라로 이동하는 조건을 살펴봅니다.",
+  "author": "UNIT TX Research",
+  "date": "2026.09.01",
+  "topic": "STABLECOIN PAYMENTS"
+}
+```
+
+프로젝트 이미지가 있으면 JSON과 같은 폴더 또는 그 하위 폴더에 넣고 `"hero_image": "art/project.png"`를 추가한다. 절대 경로, 상위 폴더로 나가는 경로, 원격 URL은 허용하지 않는다.
+
 ## 데이터 차트 필드
 
 `figure-data`는 `source`, `chart`, `takeaways`가 필수다. `chart.type`은 `line` 또는 `bar`, `labels`는 2-12개, `series`는 1-3개다. 각 시리즈의 `values` 수는 `labels` 수와 같아야 한다.
@@ -96,6 +129,42 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 
 `figure-framework`는 3-5개의 `nodes`를 순서대로 배치한다. 각 노드는 짧은 `title`과 한 문장 `body`를 가진다. 마지막 결론은 선택 필드 `summary`에 쓴다.
 
+```json
+{
+  "template": "figure-framework",
+  "slug": "onchain-payment-framework",
+  "eyebrow": "TRANSACTION FLOW",
+  "title": "온체인 결제는 세 개의 연결된 레이어로 완성된다",
+  "source": "UNIT TX Research · conceptual framework",
+  "date": "2026.09.01",
+  "nodes": [
+    {"key": "INTENT", "title": "결제 의도", "body": "사용자가 거래를 시작한다."},
+    {"key": "SETTLEMENT", "title": "온체인 정산", "body": "네트워크가 거래를 확정한다."},
+    {"key": "OFFRAMP", "title": "수취와 환전", "body": "수취인이 자산을 보유하거나 환전한다."}
+  ],
+  "summary": "라우팅과 환전 마찰을 줄일수록 일반 결제 경험에 가까워진다."
+}
+```
+
+## 차트 선택
+
+- 시간에 따른 추세와 두 시리즈 비교에는 `line`을 쓴다.
+- 항목별 크기 비교에는 `bar`를 쓴다.
+- 파이, 도넛, 3D 차트는 지원하지 않는다. 작은 화면에서 비교가 어렵고 장식적 왜곡이 크기 때문이다.
+- 값이 8개를 넘으면 렌더러는 첫 값과 마지막 값만 직접 표시해 라벨 겹침을 줄인다.
+- 시리즈가 두 개 이상이면 색상뿐 아니라 실선과 점선도 함께 사용한다.
+
+## 글자와 안전 여백
+
+- 커버 제목: 67-68px, 최대 두 줄
+- 커버 부제: 28-29px
+- 차트 제목: 54px
+- 차트 축과 범례: 19-20px
+- 프레임워크 노드 제목: 35px
+- 외곽 안전 여백: 가로 68px 이상, 커버 핵심 카피는 74px 이상
+
+템플릿이 자동으로 글자를 계속 줄이지 않도록 제목 길이를 검증한다. 긴 제목은 중요한 말을 앞으로 옮겨 직접 두 줄로 나눈다.
+
 ## 제작 순서
 
 1. 가장 가까운 `examples/*.json`을 복제한다.
@@ -115,4 +184,3 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 - 모바일 폭으로 축소해도 핵심 수치가 읽히는가?
 - 로고에 흰색 또는 검정 사각형이 보이지 않는가?
 - 외곽 6% 안으로 핵심 텍스트가 들어오지 않았는가?
-

@@ -229,9 +229,10 @@ def _chart_context(chart: dict[str, Any]) -> dict[str, Any]:
             points = []
             for index, value in enumerate(original["values"]):
                 y = y_position(float(value))
-                label_y = y - 18 - series_index * 19
-                if label_y < 20:
-                    label_y = y + 31 + series_index * 19
+                if series_index % 2 == 0:
+                    label_y = max(y - 18 - (series_index // 2) * 19, 20)
+                else:
+                    label_y = min(y + 34 + (series_index // 2) * 19, height - 42)
                 points.append(
                     {
                         "x": x_positions[index],

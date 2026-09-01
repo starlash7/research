@@ -11,6 +11,7 @@ from pathlib import Path
 from render import (
     TEMPLATES,
     build_context,
+    load_document,
     output_path,
     png_size,
     render_document,
@@ -157,6 +158,19 @@ class HtmlTests(unittest.TestCase):
         self.assertEqual(len(context["chart"]["series"][0]["points"]), 6)
         self.assertEqual(len(context["chart"]["ticks"]), 5)
         self.assertIn(",", context["chart"]["series"][0]["polyline"])
+
+    def test_close_line_series_place_labels_on_opposite_sides(self):
+        document = data_document()
+        document["chart"]["series"].append(
+            {"name": "비교군", "values": [91.0, 77.0, 62.0]}
+        )
+
+        context = build_context(document, Path("examples/figure-data.json"))
+
+        first = context["chart"]["series"][0]["points"]
+        second = context["chart"]["series"][1]["points"]
+        self.assertTrue(all(point["label_y"] < point["y"] for point in first))
+        self.assertTrue(all(point["label_y"] > point["y"] for point in second))
 
     def test_bar_chart_context_contains_rectangles(self):
         document = data_document()
@@ -417,6 +431,25 @@ class CliTests(unittest.TestCase):
             self.assertTrue(chromium.browser.closed)
             self.assertEqual(chromium.browser.page.screenshots, 2)
             self.assertEqual([png_size(path) for path in outputs], [(2880, 1512), (2880, 2400)])
+
+
+class ExampleTests(unittest.TestCase):
+    def test_example_set_covers_all_templates(self):
+        examples = Path(__file__).parents[1] / "examples"
+        documents = [load_document(path) for path in sorted(examples.glob("*.json"))]
+
+        self.assertEqual({document["template"] for document in documents}, set(TEMPLATES))
+        for document in documents:
+            validate_document(document)
+
+    def test_visible_example_copy_has_no_em_or_en_dash(self):
+        examples = Path(__file__).parents[1] / "examples"
+        for path in sorted(examples.glob("*.json")):
+            with self.subTest(path=path.name):
+                document = load_document(path)
+                html = render_html(document, path)
+                self.assertNotIn("—", html)
+                self.assertNotIn("–", html)
 
 
 if __name__ == "__main__":

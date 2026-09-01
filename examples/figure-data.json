@@ -1,0 +1,33 @@
+{
+  "template": "figure-data",
+  "slug": "token-survival-example",
+  "highlight": "62%",
+  "title": "상위 토큰도 5년 안에 크게 사라진다",
+  "source": "Example data · replace before publishing",
+  "date": "2026.09.01",
+  "chart": {
+    "type": "line",
+    "unit": "%",
+    "y_min": 20,
+    "y_max": 100,
+    "labels": ["1Y", "2Y", "3Y", "4Y", "5Y", "6Y", "7Y", "8Y"],
+    "series": [
+      {
+        "name": "Top 100 최초 진입 기준",
+        "values": [29.2, 35.7, 43.4, 53.9, 61.7, 66.3, 70.5, 76.6]
+      },
+      {
+        "name": "프로젝트 시작 기준",
+        "color": "#2563A6",
+        "values": [28.5, 33.9, 41.4, 51.8, 59.3, 64.0, 67.9, 74.4]
+      }
+    ]
+  },
+  "takeaways": [
+    {"label": "분석 표본", "value": "1,539 tokens"},
+    {"label": "중앙 생존 기간", "value": "2년 4개월"},
+    {"label": "평균 생존 기간", "value": "2년 10개월"}
+  ],
+  "note": "Example figure - verify every value before publishing"
+}
+
