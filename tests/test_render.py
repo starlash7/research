@@ -1,9 +1,26 @@
 from __future__ import annotations
 
 import unittest
+import contextlib
+import io
+import json
+import struct
+import tempfile
 from pathlib import Path
 
-from render import TEMPLATES, build_context, render_html, safe_slug, validate_document
+from render import (
+    TEMPLATES,
+    build_context,
+    output_path,
+    png_size,
+    render_document,
+    render_html,
+    render_sources,
+    safe_slug,
+    select_sources,
+    update_manifest,
+    validate_document,
+)
 
 
 def cover_document(**overrides):
@@ -165,6 +182,241 @@ class HtmlTests(unittest.TestCase):
         document = object_cover_document(hero_image="../outside.png")
         with self.assertRaisesRegex(ValueError, "hero_image"):
             build_context(document, Path("examples/cover-object.json"))
+
+    def test_html_uses_absolute_local_assets(self):
+        html = render_html(cover_document(), Path("examples/cover-editorial.json"))
+        self.assertIn("file:", html)
+        self.assertNotIn("../assets", html)
+
+
+class OutputTests(unittest.TestCase):
+    def test_output_path_uses_slug_and_suffix(self):
+        self.assertEqual(output_path(Path("out"), "sample", ".png"), Path("out/sample.png"))
+        self.assertEqual(output_path(Path("out"), "sample", ".html"), Path("out/sample.html"))
+
+    def test_manifest_update_preserves_unrelated_entries(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            (output / "manifest.json").write_text(
+                json.dumps({"cards": {"old": {"template": "cover-editorial"}}}),
+                encoding="utf-8",
+            )
+
+            path = update_manifest(
+                output,
+                slug="new",
+                template="figure-data",
+                size=(1440, 1200),
+                scale=1,
+                source="figure-data.json",
+            )
+
+            cards = json.loads(path.read_text(encoding="utf-8"))["cards"]
+            self.assertEqual(set(cards), {"old", "new"})
+            self.assertEqual(cards["new"]["width"], 1440)
+            self.assertEqual(cards["new"]["height"], 1200)
+
+    def test_png_size_reads_ihdr_dimensions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.png"
+            path.write_bytes(
+                b"\x89PNG\r\n\x1a\n"
+                + struct.pack(">I", 13)
+                + b"IHDR"
+                + struct.pack(">II", 1440, 756)
+            )
+
+            self.assertEqual(png_size(path), (1440, 756))
+
+    def test_png_size_rejects_non_png(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.png"
+            path.write_bytes(b"not a png")
+
+            with self.assertRaisesRegex(ValueError, "PNG"):
+                png_size(path)
+
+    def test_render_document_writes_exact_viewport_outputs(self):
+        class FakePage:
+            def __init__(self):
+                self.viewport = None
+                self.url = None
+                self.waits = []
+
+            def set_viewport_size(self, size):
+                self.viewport = size
+
+            def goto(self, url, wait_until):
+                self.url = url
+                self.wait_until = wait_until
+
+            def wait_for_function(self, expression):
+                self.waits.append(expression)
+
+            def screenshot(self, path):
+                Path(path).write_bytes(
+                    b"\x89PNG\r\n\x1a\n"
+                    + struct.pack(">I", 13)
+                    + b"IHDR"
+                    + struct.pack(">II", self.viewport["width"], self.viewport["height"])
+                )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "cover.json"
+            source.write_text(json.dumps(cover_document()), encoding="utf-8")
+            output = root / "out"
+            page = FakePage()
+
+            png = render_document(page, source, output, scale=1)
+
+            self.assertEqual(page.viewport, {"width": 1440, "height": 756})
+            self.assertEqual(page.wait_until, "load")
+            self.assertTrue(page.url.startswith("file:"))
+            self.assertEqual(len(page.waits), 2)
+            self.assertEqual(png, output / "sample-cover.png")
+            self.assertTrue((output / "sample-cover.html").is_file())
+            self.assertTrue((output / "manifest.json").is_file())
+
+    def test_render_document_rejects_wrong_png_dimensions(self):
+        class WrongSizePage:
+            def set_viewport_size(self, size):
+                pass
+
+            def goto(self, url, wait_until):
+                pass
+
+            def wait_for_function(self, expression):
+                pass
+
+            def screenshot(self, path):
+                Path(path).write_bytes(
+                    b"\x89PNG\r\n\x1a\n"
+                    + struct.pack(">I", 13)
+                    + b"IHDR"
+                    + struct.pack(">II", 1, 1)
+                )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "cover.json"
+            source.write_text(json.dumps(cover_document()), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "크기"):
+                render_document(WrongSizePage(), source, root / "out", scale=1)
+
+
+class CliTests(unittest.TestCase):
+    def test_select_sources_requires_exactly_one_mode(self):
+        with self.assertRaisesRegex(ValueError, "하나"):
+            select_sources(None, False, Path("examples"))
+        with self.assertRaisesRegex(ValueError, "하나"):
+            select_sources(Path("one.json"), True, Path("examples"))
+
+    def test_select_sources_returns_sorted_json_examples(self):
+        with tempfile.TemporaryDirectory() as directory:
+            examples = Path(directory)
+            (examples / "z.json").write_text("{}", encoding="utf-8")
+            (examples / "a.json").write_text("{}", encoding="utf-8")
+            (examples / "ignore.txt").write_text("{}", encoding="utf-8")
+
+            sources = select_sources(None, True, examples)
+
+            self.assertEqual([path.name for path in sources], ["a.json", "z.json"])
+
+    def test_select_sources_rejects_missing_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "찾을 수"):
+                select_sources(Path(directory) / "missing.json", False, Path(directory))
+
+    def test_render_sources_reuses_one_browser_for_all_documents(self):
+        class FakePage:
+            def __init__(self, scale):
+                self.scale = scale
+                self.viewport = None
+                self.screenshots = 0
+
+            def set_viewport_size(self, size):
+                self.viewport = size
+
+            def goto(self, url, wait_until):
+                pass
+
+            def wait_for_function(self, expression):
+                pass
+
+            def screenshot(self, path):
+                self.screenshots += 1
+                Path(path).write_bytes(
+                    b"\x89PNG\r\n\x1a\n"
+                    + struct.pack(">I", 13)
+                    + b"IHDR"
+                    + struct.pack(
+                        ">II",
+                        self.viewport["width"] * self.scale,
+                        self.viewport["height"] * self.scale,
+                    )
+                )
+
+        class FakeBrowser:
+            def __init__(self):
+                self.new_page_calls = 0
+                self.closed = False
+                self.page = None
+
+            def new_page(self, viewport, device_scale_factor):
+                self.new_page_calls += 1
+                self.page = FakePage(device_scale_factor)
+                return self.page
+
+            def close(self):
+                self.closed = True
+
+        class FakeChromium:
+            def __init__(self):
+                self.launch_calls = 0
+                self.browser = FakeBrowser()
+
+            def launch(self):
+                self.launch_calls += 1
+                return self.browser
+
+        class FakePlaywright:
+            def __init__(self):
+                self.chromium = FakeChromium()
+
+        class FakeManager:
+            def __init__(self):
+                self.playwright = FakePlaywright()
+
+            def __enter__(self):
+                return self.playwright
+
+            def __exit__(self, exc_type, exc, traceback):
+                pass
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            cover = root / "cover.json"
+            data = root / "data.json"
+            cover.write_text(json.dumps(cover_document()), encoding="utf-8")
+            data.write_text(json.dumps(data_document()), encoding="utf-8")
+            manager = FakeManager()
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                outputs = render_sources(
+                    [cover, data],
+                    root / "out",
+                    scale=2,
+                    playwright_factory=lambda: manager,
+                )
+
+            chromium = manager.playwright.chromium
+            self.assertEqual(chromium.launch_calls, 1)
+            self.assertEqual(chromium.browser.new_page_calls, 1)
+            self.assertTrue(chromium.browser.closed)
+            self.assertEqual(chromium.browser.page.screenshots, 2)
+            self.assertEqual([png_size(path) for path in outputs], [(2880, 1512), (2880, 2400)])
 
 
 if __name__ == "__main__":

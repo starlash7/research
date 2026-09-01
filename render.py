@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import re
+import struct
+import sys
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -317,6 +321,7 @@ def build_context(document: dict[str, Any], source_path: Path) -> dict[str, Any]
             "width": spec.size[0],
             "height": spec.size[1],
             "accent": document.get("accent") or DEFAULT_ACCENT,
+            "assets_uri": (BASE / "assets").resolve().as_uri(),
             "hero_uri": _hero_uri(document, source_path),
             "highlight": document.get("highlight"),
         }
@@ -329,3 +334,167 @@ def build_context(document: dict[str, Any], source_path: Path) -> dict[str, Any]
 def render_html(document: dict[str, Any], source_path: Path) -> str:
     spec = validate_document(document)
     return ENV.get_template(spec.filename).render(**build_context(document, source_path))
+
+
+def output_path(output_dir: Path, slug: str, suffix: str) -> Path:
+    if suffix not in {".html", ".png"}:
+        raise ValueError("출력 확장자는 .html 또는 .png여야 합니다")
+    return output_dir / f"{safe_slug(slug)}{suffix}"
+
+
+def png_size(path: Path) -> tuple[int, int]:
+    header = path.read_bytes()[:24]
+    if len(header) < 24 or header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
+        raise ValueError(f"유효한 PNG가 아닙니다: {path}")
+    return struct.unpack(">II", header[16:24])
+
+
+def update_manifest(
+    output_dir: Path,
+    *,
+    slug: str,
+    template: str,
+    size: tuple[int, int],
+    scale: int,
+    source: str,
+) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / "manifest.json"
+    if path.exists():
+        try:
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"manifest.json을 읽을 수 없습니다: {exc}") from exc
+    else:
+        manifest = {}
+    cards = manifest.setdefault("cards", {})
+    if not isinstance(cards, dict):
+        raise ValueError("manifest.json의 cards는 객체여야 합니다")
+    cards[slug] = {
+        "template": template,
+        "file": f"{slug}.png",
+        "source": source,
+        "width": size[0] * scale,
+        "height": size[1] * scale,
+        "scale": scale,
+    }
+    manifest["generated_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
+    temporary = output_dir / ".manifest.json.tmp"
+    temporary.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+    return path
+
+
+def render_document(page: Any, source_path: Path, output_dir: Path, scale: int = 1) -> Path:
+    if scale not in {1, 2}:
+        raise ValueError("scale은 1 또는 2여야 합니다")
+    source_path = source_path.resolve()
+    document = load_document(source_path)
+    spec = validate_document(document)
+    slug = safe_slug(document["slug"])
+    output_dir.mkdir(parents=True, exist_ok=True)
+    html_path = output_path(output_dir, slug, ".html")
+    png_path = output_path(output_dir, slug, ".png")
+
+    temporary_html = html_path.with_name(f".{html_path.name}.tmp")
+    temporary_html.write_text(render_html(document, source_path), encoding="utf-8")
+    temporary_html.replace(html_path)
+
+    page.set_viewport_size({"width": spec.size[0], "height": spec.size[1]})
+    page.goto(html_path.resolve().as_uri(), wait_until="load")
+    page.wait_for_function("document.fonts.status === 'loaded'")
+    page.wait_for_function(
+        "Array.from(document.images).every(image => image.complete && image.naturalWidth > 0)"
+    )
+    page.screenshot(path=str(png_path))
+
+    expected = (spec.size[0] * scale, spec.size[1] * scale)
+    actual = png_size(png_path)
+    if actual != expected:
+        raise ValueError(f"PNG 크기가 올바르지 않습니다: {actual[0]}×{actual[1]}, expected {expected[0]}×{expected[1]}")
+
+    update_manifest(
+        output_dir,
+        slug=slug,
+        template=document["template"],
+        size=spec.size,
+        scale=scale,
+        source=source_path.name,
+    )
+    return png_path
+
+
+def select_sources(input_path: Path | None, render_all: bool, examples_dir: Path) -> list[Path]:
+    if (input_path is None) == (not render_all):
+        raise ValueError("입력 JSON 또는 --all 중 하나만 선택해야 합니다")
+    if render_all:
+        sources = sorted(examples_dir.glob("*.json"))
+        if not sources:
+            raise ValueError(f"예제 JSON을 찾을 수 없습니다: {examples_dir}")
+        return sources
+    assert input_path is not None
+    if not input_path.is_file():
+        raise ValueError(f"입력 JSON을 찾을 수 없습니다: {input_path}")
+    if input_path.suffix.lower() != ".json":
+        raise ValueError("입력 파일은 .json이어야 합니다")
+    return [input_path]
+
+
+def render_sources(
+    sources: list[Path],
+    output_dir: Path,
+    scale: int = 1,
+    playwright_factory: Any = None,
+) -> list[Path]:
+    if not sources:
+        raise ValueError("렌더할 JSON이 없습니다")
+    if scale not in {1, 2}:
+        raise ValueError("scale은 1 또는 2여야 합니다")
+    if playwright_factory is None:
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError as exc:
+            raise RuntimeError("Playwright가 설치되지 않았습니다: pip install -r requirements.txt") from exc
+        playwright_factory = sync_playwright
+
+    outputs = []
+    with playwright_factory() as playwright:
+        browser = playwright.chromium.launch()
+        try:
+            page = browser.new_page(
+                viewport={"width": 1, "height": 1},
+                device_scale_factor=scale,
+            )
+            for source in sources:
+                path = render_document(page, source, output_dir, scale)
+                outputs.append(path)
+                print(f"[ok] {path}")
+        finally:
+            browser.close()
+    return outputs
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="UNIT TX 리서치 이미지 렌더러")
+    parser.add_argument("input", nargs="?", type=Path, help="렌더할 JSON 파일")
+    parser.add_argument("--all", action="store_true", dest="render_all", help="examples의 모든 JSON 렌더")
+    parser.add_argument("--output-dir", type=Path, default=BASE / "out", help="출력 디렉터리")
+    parser.add_argument("--scale", type=int, choices=(1, 2), default=1, help="PNG 배율")
+    args = parser.parse_args(argv)
+
+    try:
+        sources = select_sources(args.input, args.render_all, BASE / "examples")
+        outputs = render_sources(sources, args.output_dir, args.scale)
+    except Exception as exc:
+        print(f"[error] {exc}", file=sys.stderr)
+        return 1
+
+    print(f"[done] {len(outputs)} images")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

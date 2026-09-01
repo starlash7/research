@@ -17,16 +17,15 @@
   </section>
 
   <div class="editorial-visual" aria-hidden="true">
-    <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="">
+    <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="">
   </div>
 
   <footer class="cover-footer">
     <span class="brand-lockup">
-      <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="UNIT TX">
+      <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>
     </span>
     <span class="editorial-topic">{{ topic|default("RESEARCH") }}</span>
   </footer>
 </main>
 {% endblock %}
-

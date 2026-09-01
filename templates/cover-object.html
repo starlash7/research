@@ -16,14 +16,14 @@
       <img class="hero-image" src="{{ hero_uri }}" alt="">
     {% else %}
       <div class="fallback-object">
-        <img class="logo logo-on-light" src="../assets/unit-tx-logo.png" alt="">
+        <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="">
       </div>
     {% endif %}
   </div>
 
   <footer class="object-footer">
     <span class="brand-lockup">
-      <img class="logo logo-on-dark" src="../assets/unit-tx-logo.png" alt="UNIT TX">
+      <img class="logo logo-on-dark" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>
     </span>
     <span class="meta-row">
@@ -34,4 +34,3 @@
   </footer>
 </main>
 {% endblock %}
-
