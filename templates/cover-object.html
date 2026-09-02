@@ -6,39 +6,13 @@
     <p class="object-subtitle">{{ subtitle }}</p>
   </section>
 
-  <div class="object-stage" aria-hidden="true">
-    {% if hero_uri %}
+  {% if hero_uri %}
+    <div class="object-stage" aria-hidden="true">
       <div class="atlas-media-frame">
         <img class="hero-image" src="{{ hero_uri }}" alt="">
       </div>
-    {% else %}
-      <div class="signal-map">
-        <div class="signal-map-grid"></div>
-        <span class="signal-route signal-route-a"></span>
-        <span class="signal-route signal-route-b"></span>
-        <span class="signal-route signal-route-c"></span>
-        <span class="signal-node signal-node-origin">
-          <span class="signal-node-dot"></span>
-          <span>ORIGIN</span>
-        </span>
-        <span class="signal-node signal-node-route">
-          <span class="signal-node-dot"></span>
-          <span>ROUTING</span>
-        </span>
-        <span class="signal-node signal-node-settle">
-          <span class="signal-node-dot"></span>
-          <span>SETTLEMENT</span>
-        </span>
-        <span class="signal-node signal-node-output">
-          <span class="signal-node-dot"></span>
-          <span>OUTPUT</span>
-        </span>
-        <div class="signal-core">
-          <span class="signal-core-mark" aria-hidden="true"></span>
-        </div>
-      </div>
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 
   {% set footer_class = "object-footer" %}
   {% set logo_treatment = "logo-on-dark" %}

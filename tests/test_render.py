@@ -285,10 +285,24 @@ class HtmlTests(unittest.TestCase):
         self.assertIn("unit-tx-logo.png", html)
         self.assertIn("logo-on-dark", html)
 
-    def test_dark_cover_uses_signal_map_instead_of_an_object(self):
+    def test_dark_cover_has_no_generated_graph_or_symbol(self):
         html = render_html(object_cover_document(), Path("examples/cover-object.json"))
-        self.assertIn("signal-map", html)
-        self.assertNotIn("fallback-object", html)
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertNotIn("object-stage", html)
+        self.assertNotIn("signal-map", html)
+        self.assertNotIn("signal-route", html)
+        self.assertNotIn("signal-node", html)
+        self.assertNotIn("signal-core", html)
+        self.assertNotIn(".signal-", styles)
+
+    def test_dark_cover_uses_a_neutral_black_surface(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertIn("--dark-surface: #0a0a0a;", styles)
+        self.assertRegex(
+            styles,
+            r"\.cover-object-canvas\s*\{[^}]*background: var\(--dark-surface\);",
+        )
+        self.assertNotIn("#071426", styles)
 
     def test_bright_templates_use_the_blue_accent(self):
         for document, path in (
@@ -382,13 +396,15 @@ class HtmlTests(unittest.TestCase):
 
     def test_dates_use_high_contrast_surface_colors(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertIn("--date-on-light: #000000;", styles)
+        self.assertIn("--date-on-dark: #ffffff;", styles)
         self.assertRegex(
             styles,
-            r"\.fixed-date\s*\{[^}]*color: var\(--brand-on-light\);",
+            r"\.fixed-date\s*\{[^}]*color: var\(--date-on-light\);",
         )
         self.assertRegex(
             styles,
-            r"\.object-footer \.fixed-date\s*\{[^}]*color: var\(--brand-on-dark\);",
+            r"\.object-footer \.fixed-date\s*\{[^}]*color: var\(--date-on-dark\);",
         )
 
     def test_information_cards_use_the_rounder_shared_radius(self):

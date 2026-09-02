@@ -9,7 +9,7 @@ Create a version-controlled image system for UNIT TX research posts on Substack.
 The system combines three qualities from the supplied references:
 
 - product-like research covers with a white field, UNIT TX blue signals, large Korean typography, and generous whitespace;
-- dark research covers with a blueprint grid and a system signal map instead of a hero object;
+- dark research covers with a neutral black field, strong typography, and no generated filler art;
 - information-dense figures with a clear claim, source, as-of date, chart, and takeaway metrics.
 
 The implementation follows the proven `kimch-index` card pipeline: Jinja templates render structured data into fixed-size HTML, and Playwright captures deterministic PNG output. This repository does not copy its collectors or product-specific card logic.
@@ -32,7 +32,7 @@ The renderer supports an optional 2× export for unusually high-resolution needs
 
 ### Signal map cover
 
-`cover-object` uses a deep navy field, blueprint grid, white UNIT TX mark, left-aligned editorial copy, and a signal map made from connected routes, nodes, and a UNIT TX core. An optional user-supplied hero image is placed inside the same framed map treatment. The default contains no metal sphere or decorative 3D object.
+`cover-object` uses a neutral black field, white UNIT TX mark, and left-aligned editorial copy. The default generates no graph, symbol, grid, or decorative object. An optional user-supplied hero image is shown in a simple rounded frame; without one, the right side remains intentional negative space.
 
 ### Data figure
 
@@ -53,7 +53,7 @@ The revised palette is intentionally restrained and blue-led:
 - ink: `#0C1B33`
 - muted ink: `#667085`
 - UNIT TX Blue: `#0064FF` (Toss Blue reference)
-- deep navy: `#071426`
+- dark surface: `#0A0A0A`
 - series navy: `#123B7A`
 - series blue: `#0C78B7`
 
@@ -105,7 +105,7 @@ No external network request is required for mock rendering. Hero images must be 
 
 - Unknown templates, missing required fields, invalid colors, unsupported chart types, and unsafe output slugs fail with a concise error before Chromium starts.
 - Overlong titles fail validation rather than silently shrinking to unreadable text.
-- Missing optional hero art uses the CSS signal map.
+- Missing optional hero art leaves intentional negative space.
 - Missing required local assets fail the run; they are not replaced with remote assets.
 - Existing unrelated output files are never deleted. A render replaces only its own HTML, PNG, and manifest entry.
 
@@ -119,7 +119,7 @@ Visual review checks:
 - the UNIT TX mark has no visible rectangular background;
 - Korean titles wrap intentionally;
 - sources, dates, units, and chart legends are readable;
-- the white and blue light system, and the deep navy blueprint system, preserve sufficient contrast;
+- the white and blue light system, and the neutral black dark system, preserve sufficient contrast;
 - the 6:5 data card remains understandable when scaled to mobile width.
 
 ## Success Criteria
@@ -128,4 +128,4 @@ Visual review checks:
 - Outputs exactly match 1440×756, 1440×810, or 1440×1200 as appropriate.
 - Future research images can be created by editing JSON and optional local hero art only.
 - The repository documents authoritative visual and data-integrity rules for every future contributor.
-- The generated examples visibly form one UNIT TX family while preserving the distinct editorial, signal map, chart, and framework use cases.
+- The generated examples visibly form one UNIT TX family while preserving distinct editorial, dark typography, chart, and framework use cases.
