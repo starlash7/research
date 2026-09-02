@@ -324,14 +324,30 @@ class HtmlTests(unittest.TestCase):
         self.assertNotIn("signal-core", html)
         self.assertNotIn(".signal-", styles)
 
-    def test_dark_cover_uses_a_neutral_black_surface(self):
+    def test_dark_cover_uses_layered_charcoal_gradient(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")
-        self.assertIn("--dark-surface: #0a0a0a;", styles)
+        self.assertIn("--dark-surface: #111318;", styles)
         self.assertRegex(
             styles,
-            r"\.cover-object-canvas\s*\{[^}]*background: var\(--dark-surface\);",
+            r"\.cover-object-canvas::before\s*\{[^}]*radial-gradient[^}]*radial-gradient[^}]*linear-gradient",
         )
+        self.assertRegex(
+            styles,
+            r"\.cover-object-canvas::after\s*\{[^}]*radial-gradient",
+        )
+        self.assertNotIn("--dark-surface: #0a0a0a;", styles)
         self.assertNotIn("#071426", styles)
+
+    def test_cover_categories_have_surface_specific_colors(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertRegex(
+            styles,
+            r"\.cover-category\s*\{[^}]*color: var\(--accent\);",
+        )
+        self.assertRegex(
+            styles,
+            r"\.cover-object-canvas \.cover-category\s*\{[^}]*color: #e3e6ed;",
+        )
 
     def test_bright_templates_use_the_blue_accent(self):
         for document, path in (
