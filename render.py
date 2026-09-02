@@ -22,7 +22,7 @@ ENV = Environment(
     autoescape=True,
     undefined=StrictUndefined,
 )
-DEFAULT_ACCENT = "#2F6BFF"
+DEFAULT_ACCENT = "#0064FF"
 SERIES_COLORS = (DEFAULT_ACCENT, "#123B7A", "#0C78B7")
 
 

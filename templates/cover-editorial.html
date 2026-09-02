@@ -3,15 +3,17 @@
 <main class="canvas cover-editorial-canvas">
   <header class="cover-top">
     <span class="cover-pill">{{ eyebrow }}</span>
-    <span class="cover-index">{{ index_label|default("RESEARCH IMAGE") }}</span>
+    {% if index_label is defined and index_label %}<span class="cover-index">{{ index_label }}</span>{% endif %}
   </header>
 
   <section class="editorial-copy">
     <h1 class="editorial-title">{{ title }}</h1>
     <p class="editorial-subtitle">{{ subtitle }}</p>
     <div class="meta-row editorial-byline">
-      <span>{{ author|default("UNIT TX Research") }}</span>
-      <span class="meta-separator"></span>
+      {% if author is defined and author %}
+        <span>{{ author }}</span>
+        <span class="meta-separator"></span>
+      {% endif %}
       <span class="num">{{ date }}</span>
     </div>
   </section>
@@ -25,7 +27,7 @@
       <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>
     </span>
-    <span class="editorial-topic">{{ topic|default("RESEARCH") }}</span>
+    {% if topic is defined and topic %}<span class="editorial-topic">{{ topic }}</span>{% endif %}
   </footer>
 </main>
 {% endblock %}

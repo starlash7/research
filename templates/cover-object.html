@@ -59,11 +59,13 @@
       <img class="logo logo-on-dark" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>
     </span>
-    <span class="meta-row">
-      <span>{{ author|default("UNIT TX Research") }}</span>
-      <span class="meta-separator"></span>
-      <span>{{ topic|default("DIGITAL ASSETS") }}</span>
-    </span>
+    {% if (author is defined and author) or (topic is defined and topic) %}
+      <span class="meta-row">
+        {% if author is defined and author %}<span>{{ author }}</span>{% endif %}
+        {% if author is defined and author and topic is defined and topic %}<span class="meta-separator"></span>{% endif %}
+        {% if topic is defined and topic %}<span>{{ topic }}</span>{% endif %}
+      </span>
+    {% endif %}
   </footer>
 </main>
 {% endblock %}

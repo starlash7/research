@@ -12,7 +12,7 @@
 
 - Canonical outputs are exactly 1440×756 (`cover`), 1440×810 (`wide`), and 1440×1200 (`data`).
 - The supplied 738×694 UNIT TX symbol must remain unaltered.
-- Bright templates use a white `#FFFFFF` field with UNIT TX blue `#2F6BFF` as the default signal color.
+- Bright templates use a white `#FFFFFF` field with UNIT TX Blue `#0064FF` (Toss Blue reference) as the default signal color.
 - The dark cover uses a deep navy blueprint grid and connected signal map, not a decorative 3D object.
 - Standard example rendering must not require a network request.
 - Quantitative figures require a source and as-of date.

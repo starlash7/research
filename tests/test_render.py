@@ -11,6 +11,7 @@ from pathlib import Path
 
 from render import (
     DEFAULT_ACCENT,
+    SERIES_COLORS,
     TEMPLATES,
     build_context,
     load_document,
@@ -30,7 +31,7 @@ def cover_document(**overrides):
     document = {
         "template": "cover-editorial",
         "slug": "sample-cover",
-        "eyebrow": "UNIT TX RESEARCH",
+        "eyebrow": "ADOPTION BRIEF",
         "title": "온체인 결제의 다음 단계",
         "subtitle": "보유에서 실제 사용으로 이동하는 시장을 읽습니다.",
         "date": "2026.09.01",
@@ -87,8 +88,9 @@ def framework_document(**overrides):
 
 
 class ValidationTests(unittest.TestCase):
-    def test_unit_tx_uses_blue_as_the_default_accent(self):
-        self.assertEqual(DEFAULT_ACCENT, "#2F6BFF")
+    def test_unit_tx_uses_toss_blue_as_the_default_accent(self):
+        self.assertEqual(DEFAULT_ACCENT, "#0064FF")
+        self.assertEqual(SERIES_COLORS, ("#0064FF", "#123B7A", "#0C78B7"))
 
     def test_every_template_has_fixed_dimensions(self):
         self.assertEqual(TEMPLATES["cover-editorial"].size, (1440, 756))
@@ -264,7 +266,20 @@ class HtmlTests(unittest.TestCase):
         ):
             with self.subTest(template=document["template"]):
                 html = render_html(document, path)
-                self.assertIn("--accent: #2F6BFF", html)
+                self.assertIn("--accent: #0064FF", html)
+
+    def test_covers_do_not_repeat_the_brand_byline(self):
+        for document, path in (
+            (cover_document(), Path("examples/cover-editorial.json")),
+            (object_cover_document(), Path("examples/cover-object.json")),
+        ):
+            with self.subTest(template=document["template"]):
+                html = render_html(document, path)
+                self.assertNotIn("UNIT TX Research", html)
+
+    def test_framework_source_is_not_repeated_in_the_footer(self):
+        html = render_html(framework_document(), Path("examples/figure-framework.json"))
+        self.assertEqual(html.count("UNIT TX Research"), 1)
 
     def test_framework_renders_nodes_and_connectors(self):
         html = render_html(framework_document(), Path("examples/figure-framework.json"))

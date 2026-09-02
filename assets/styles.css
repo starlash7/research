@@ -11,7 +11,7 @@
   --ink: #0c1b33;
   --muted: #667085;
   --line: #d9e2f0;
-  --blue: #2f6bff;
+  --blue: #0064ff;
   --blue-deep: #123b7a;
   --blue-mid: #0c78b7;
   --radius: 18px;
@@ -255,7 +255,7 @@ body {
   inset: 0;
   opacity: 0.42;
   background-image:
-    linear-gradient(110deg, transparent 0 54%, rgba(47, 107, 255, 0.18) 54.1% 54.2%, transparent 54.3%),
+    linear-gradient(110deg, transparent 0 54%, rgba(0, 100, 255, 0.18) 54.1% 54.2%, transparent 54.3%),
     repeating-linear-gradient(0deg, transparent 0, transparent 17px, rgba(255, 255, 255, 0.022) 18px);
 }
 
@@ -349,7 +349,7 @@ body {
   overflow: hidden;
   border: 1px solid rgba(169, 201, 243, 0.52);
   background: #0c203b;
-  box-shadow: 18px 18px 0 rgba(47, 107, 255, 0.12);
+  box-shadow: 18px 18px 0 rgba(0, 100, 255, 0.12);
 }
 
 .atlas-media-frame::before {
@@ -383,7 +383,7 @@ body {
   overflow: hidden;
   border: 1px solid rgba(169, 201, 243, 0.58);
   background: rgba(11, 31, 57, 0.88);
-  box-shadow: 18px 18px 0 rgba(47, 107, 255, 0.13);
+  box-shadow: 18px 18px 0 rgba(0, 100, 255, 0.13);
 }
 
 .signal-map::before {
@@ -504,7 +504,7 @@ body {
   border: 2px solid var(--accent);
   border-radius: 50%;
   background: #071426;
-  box-shadow: 0 0 0 5px rgba(47, 107, 255, 0.14);
+  box-shadow: 0 0 0 5px rgba(0, 100, 255, 0.14);
 }
 
 .signal-node-origin {
@@ -537,7 +537,7 @@ body {
   height: 100px;
   place-items: center;
   background: var(--accent);
-  box-shadow: 0 0 0 10px rgba(47, 107, 255, 0.13);
+  box-shadow: 0 0 0 10px rgba(0, 100, 255, 0.13);
 }
 
 .signal-core::before {

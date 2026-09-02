@@ -52,7 +52,7 @@ The revised palette is intentionally restrained and blue-led:
 - surface: `#F7F9FD`
 - ink: `#0C1B33`
 - muted ink: `#667085`
-- UNIT TX blue: `#2F6BFF`
+- UNIT TX Blue: `#0064FF` (Toss Blue reference)
 - deep navy: `#071426`
 - series navy: `#123B7A`
 - series blue: `#0C78B7`
