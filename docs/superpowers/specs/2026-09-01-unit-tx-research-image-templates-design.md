@@ -28,7 +28,7 @@ The renderer supports an optional 2× export for unusually high-resolution needs
 
 ### Editorial cover
 
-`cover-editorial` uses a white field, UNIT TX blue category pill and topic signal, left-aligned title and subtitle, a restrained circular blue mark on the right, and the single black UNIT TX lockup in the bottom-right footer. It is the default research cover.
+`cover-editorial` uses a white field, UNIT TX blue category pill, left-aligned title and subtitle, a restrained circular blue mark on the right, and the single UNIT TX lockup in the bottom-right footer. It is the default research cover.
 
 ### Signal map cover
 
@@ -57,9 +57,9 @@ The revised palette is intentionally restrained and blue-led:
 - series navy: `#123B7A`
 - series blue: `#0C78B7`
 
-The footer is a shared three-column contract: date left, optional template or usage label centered, and the UNIT TX lockup right. Decorative visual areas do not repeat the official logo.
+The footer is a shared two-column contract: date left and the UNIT TX lockup right. It never contains centered template, topic, or warning copy. Decorative visual areas do not repeat the official logo. The wordmark text is always `#0C1B33` on light surfaces and `#FFFFFF` on dark surfaces.
 
-Pretendard Variable is the primary Korean and Latin typeface. A local font asset is bundled so browser and machine differences cannot change line breaks. Monospace labels use the platform monospace fallback only for short metadata.
+SUIT Variable is the only Korean and Latin typeface. A local font asset is bundled so browser and machine differences cannot change line breaks. Typography uses exactly three weights: 500 for body copy, 600 for labels and metadata, and 800 for headings and the UNIT TX wordmark.
 
 ## Authoring Rules
 

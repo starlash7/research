@@ -15,6 +15,8 @@
 - Bright templates use a white `#FFFFFF` field with UNIT TX Blue `#0064FF` (Toss Blue reference) as the default signal color.
 - The dark cover uses a deep navy blueprint grid and connected signal map, not a decorative 3D object.
 - Every template uses a shared bottom footer with the date on the left and one UNIT TX logo lockup on the right.
+- The footer has no centered label, topic, or warning copy.
+- Typography uses local SUIT Variable with only weights 500, 600, and 800.
 - Standard example rendering must not require a network request.
 - Quantitative figures require a source and as-of date.
 - Cover titles may occupy at most two intentional lines.
@@ -120,7 +122,7 @@ git commit -m "Add UNIT TX image authoring rules"
 
 **Files:**
 - Create: `assets/unit-tx-logo.png`
-- Create: `assets/PretendardVariable.woff2`
+- Create: `assets/SUIT-Variable.woff2`
 - Create: `assets/styles.css`
 - Create: `templates/base.html`
 - Create: `templates/cover-editorial.html`
@@ -136,7 +138,7 @@ git commit -m "Add UNIT TX image authoring rules"
 
 - [ ] **Step 1: Copy canonical assets without transforming them**
 
-Copy the exact supplied logo to `assets/unit-tx-logo.png`. Copy the locally available Pretendard Variable WOFF2 from the inspected `kimch-index` workspace to `assets/PretendardVariable.woff2`. Record Pretendard's SIL Open Font License attribution in `docs/IMAGE_SYSTEM.md`.
+Copy the exact supplied logo to `assets/unit-tx-logo.png`. Add SUIT Variable WOFF2 and its SIL Open Font License from the official SUIT repository as local assets. Record the attribution in `docs/IMAGE_SYSTEM.md`.
 
 - [ ] **Step 2: Write failing HTML and chart-context tests**
 
@@ -172,7 +174,7 @@ Expected: failures because context building and templates are absent.
 
 The templates must meet these concrete content contracts:
 
-- `cover-editorial`: category pill, maximum two-line title, subtitle, optional author, bottom-left date, bottom-right exact logo, topic index, and CSS topic glyph.
+- `cover-editorial`: category pill, maximum two-line title, subtitle, optional author, bottom-left date, bottom-right exact logo, index label, and CSS visual glyph.
 - `cover-object`: eyebrow, title, subtitle, date, exact logo, optional resolved local `hero_uri`, and complete CSS signal-map fallback.
 - `figure-data`: claim, source, date, legend, SVG line or bar chart, y-axis tick labels, x labels, units, and one to three takeaway cards.
 - `figure-framework`: eyebrow, title, source, date, three to five numbered nodes, visible directional connectors, and a summary statement.

@@ -26,13 +26,12 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 
 ## 고정 하단 푸터
 
-모든 템플릿은 `templates/partials/fixed-footer.html`을 include해 하단 푸터를 같은 3열 구조로 사용한다.
+모든 템플릿은 `templates/partials/fixed-footer.html`을 include해 하단 푸터를 같은 2열 구조로 사용한다.
 
 - 왼쪽: 기준 날짜 `date`
-- 가운데: 템플릿 종류, 주제 또는 예시 경고
 - 오른쪽: `assets/unit-tx-logo.png`와 `UNIT TX` 워드마크
 
-공식 로고는 이미지의 다른 위치에 반복해서 넣지 않는다. 밝은 배경에서는 검정 로고, 어두운 배경에서는 흰색 로고를 사용한다. 날짜를 제목 옆의 칩이나 상단 메타 영역에 별도로 반복하지 않는다.
+푸터 가운데에는 주제, 템플릿 종류, 예시 경고를 넣지 않는다. 예시 데이터 경고는 정량 이미지의 `source`에 표시한다. 공식 로고는 이미지의 다른 위치에 반복해서 넣지 않는다. 밝은 배경에서는 검정 로고와 `#0C1B33` 워드마크, 어두운 배경에서는 흰색 로고와 `#FFFFFF` 워드마크를 사용한다. 날짜를 제목 옆의 칩이나 상단 메타 영역에 별도로 반복하지 않는다.
 
 ## 설치
 
@@ -42,7 +41,7 @@ python3 -m venv .venv
 .venv/bin/playwright install chromium
 ```
 
-Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴이다. 저장소에는 렌더 재현성을 위한 WOFF2 파일과 `assets/Pretendard-LICENSE.txt`를 함께 포함한다. 원 프로젝트는 <https://github.com/orioncactus/pretendard>에서 확인할 수 있다.
+SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴이다. 저장소에는 렌더 재현성을 위한 `assets/SUIT-Variable.woff2`와 `assets/SUIT-LICENSE.txt`를 함께 포함한다. 원 프로젝트는 <https://github.com/sun-typeface/SUIT>에서 확인할 수 있다.
 
 ## 실행
 
@@ -88,8 +87,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
   "index_label": "ONCHAIN / USE CASES",
   "title": "온체인 금융은\n어디에서 쓰이는가",
   "subtitle": "결제와 송금이 실제 사용으로 넘어가는 조건을 추적한다.",
-  "date": "2026.09.01",
-  "topic": "ONCHAIN ADOPTION"
+  "date": "2026.09.01"
 }
 ```
 
@@ -102,8 +100,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
   "eyebrow": "SYSTEM NOTE",
   "title": "스테이블코인은\n결제 인프라가 되는가",
   "subtitle": "유동성과 정산 경로가 사용성을 결정한다.",
-  "date": "2026.09.01",
-  "topic": "PAYMENT RAILS"
+  "date": "2026.09.01"
 }
 ```
 
@@ -165,6 +162,10 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 
 ## 글자와 안전 여백
 
+- 글꼴: SUIT Variable 한 종류
+- 본문과 설명: 500
+- 라벨, 메타데이터, 날짜: 600
+- 제목과 UNIT TX 워드마크: 800
 - 커버 제목: 67-68px, 최대 두 줄, 한 줄당 한글 15자 또는 영문 30자 폭 이내
 - 커버 부제: 28-29px
 - 차트 제목: 54px

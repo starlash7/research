@@ -43,12 +43,12 @@ cp examples/cover-editorial.json examples/my-research-cover.json
 | `figure-framework` | 1440×810 | 구조도와 흐름도 |
 | `figure-data` | 1440×1200 | 라인 또는 막대 차트와 KPI |
 
-모든 템플릿은 날짜를 왼쪽 아래, UNIT TX 로고를 오른쪽 아래에 고정한다. 밝은 계열은 흰색과 UNIT TX Blue `#0064FF`, 어두운 커버는 deep navy signal map을 사용한다.
+모든 템플릿은 날짜를 왼쪽 아래, UNIT TX 로고를 오른쪽 아래에 고정하며 가운데 푸터 문구는 사용하지 않는다. 글꼴은 SUIT Variable, 굵기는 500/600/800으로 통일한다. 밝은 계열은 흰색과 UNIT TX Blue `#0064FF`, 어두운 커버는 deep navy signal map을 사용한다.
 
 ## 저장소 구조
 
 ```text
-assets/       UNIT TX 로고, Pretendard, 공통 CSS
+assets/       UNIT TX 로고, SUIT Variable, 공통 CSS
 examples/     복제해서 사용하는 JSON 입력
 templates/    Jinja HTML 템플릿과 공통 partial
 tests/        검증, 렌더링, 예제 회귀 테스트

@@ -5,6 +5,7 @@ import contextlib
 import hashlib
 import io
 import json
+import re
 import struct
 import tempfile
 from pathlib import Path
@@ -205,6 +206,27 @@ class DocumentationTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, goal)
 
+    def test_typography_uses_local_suit_variable_font(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertIn('font-family: "SUIT Variable"', styles)
+        self.assertIn('url("./SUIT-Variable.woff2")', styles)
+        self.assertNotIn("Pretendard", styles)
+        self.assertTrue(Path("assets/SUIT-Variable.woff2").is_file())
+        self.assertTrue(Path("assets/SUIT-LICENSE.txt").is_file())
+
+    def test_typography_uses_only_the_shared_weight_tokens(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        weights = set(re.findall(r"font-weight:\s*([^;]+);", styles))
+        self.assertEqual(
+            weights,
+            {
+                "100 900",
+                "var(--weight-regular)",
+                "var(--weight-medium)",
+                "var(--weight-bold)",
+            },
+        )
+
 
 class HtmlTests(unittest.TestCase):
     def test_html_autoescapes_user_copy(self):
@@ -304,6 +326,33 @@ class HtmlTests(unittest.TestCase):
                 self.assertEqual(html.count("unit-tx-logo.png"), 1)
                 self.assertNotIn("date-chip", html)
                 self.assertNotIn("object-date", html)
+
+    def test_fixed_footer_has_no_center_copy(self):
+        documents = (
+            (cover_document(topic="DUPLICATE TOPIC"), Path("examples/cover-editorial.json")),
+            (object_cover_document(topic="DUPLICATE TOPIC"), Path("examples/cover-object.json")),
+            (data_document(note="DUPLICATE NOTE"), Path("examples/figure-data.json")),
+            (framework_document(), Path("examples/figure-framework.json")),
+        )
+        for document, path in documents:
+            with self.subTest(template=document["template"]):
+                html = render_html(document, path)
+                self.assertNotIn("footer-topic", html)
+                self.assertNotIn("DUPLICATE TOPIC", html)
+                self.assertNotIn("DUPLICATE NOTE", html)
+
+    def test_brand_lockup_uses_one_color_per_surface(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertIn("--brand-on-light: #0c1b33;", styles)
+        self.assertIn("--brand-on-dark: #ffffff;", styles)
+        self.assertRegex(
+            styles,
+            r"\.brand-lockup\s*\{[^}]*color: var\(--brand-on-light\);",
+        )
+        self.assertRegex(
+            styles,
+            r"\.object-footer \.brand-lockup\s*\{[^}]*color: var\(--brand-on-dark\);",
+        )
 
     def test_fixed_footer_uses_the_six_percent_safe_area(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")

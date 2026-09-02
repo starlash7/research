@@ -27,6 +27,5 @@
     {"label": "분석 표본", "value": "1,539 tokens"},
     {"label": "중앙 생존 기간", "value": "2년 4개월"},
     {"label": "평균 생존 기간", "value": "2년 10개월"}
-  ],
-  "note": "Example figure - verify every value before publishing"
+  ]
 }
