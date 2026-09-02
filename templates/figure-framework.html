@@ -23,13 +23,9 @@
     <p class="summary-copy">{{ summary|default("각 단계의 마찰을 줄일수록 온체인 경험은 일반 결제에 가까워진다.") }}</p>
   </section>
 
-  <footer class="fixed-footer figure-footer">
-    <span class="fixed-date num">{{ date }}</span>
-    <span class="footer-topic">SYSTEM MAP</span>
-    <span class="brand-lockup">
-      <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
-      <span>UNIT TX</span>
-    </span>
-  </footer>
+  {% set footer_class = "figure-footer" %}
+  {% set footer_label = "SYSTEM MAP" %}
+  {% set logo_treatment = "logo-on-light" %}
+  {% include "partials/fixed-footer.html" %}
 </main>
 {% endblock %}

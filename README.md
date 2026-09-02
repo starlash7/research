@@ -50,13 +50,13 @@ cp examples/cover-editorial.json examples/my-research-cover.json
 ```text
 assets/       UNIT TX 로고, Pretendard, 공통 CSS
 examples/     복제해서 사용하는 JSON 입력
-templates/    Jinja HTML 템플릿
+templates/    Jinja HTML 템플릿과 공통 partial
 tests/        검증, 렌더링, 예제 회귀 테스트
 out/          생성된 HTML, PNG, manifest
 render.py     CLI와 렌더 파이프라인
 ```
 
-제작 규칙은 [AGENTS.md](AGENTS.md), 필드 설명과 프리퍼블리시 체크리스트는 [docs/IMAGE_SYSTEM.md](docs/IMAGE_SYSTEM.md)에 있다. 데이터 이미지는 실제 발행 전에 `source`, `date`, 단위와 모든 수치를 반드시 검증한다.
+제작 규칙은 [AGENTS.md](AGENTS.md), 저장소 목표는 [goal.md](goal.md), 필드 설명과 프리퍼블리시 체크리스트는 [docs/IMAGE_SYSTEM.md](docs/IMAGE_SYSTEM.md)에 있다. 데이터 이미지는 실제 발행 전에 `source`, `date`, 단위와 모든 수치를 반드시 검증한다.
 
 ## 검증
 

@@ -26,7 +26,7 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 
 ## 고정 하단 푸터
 
-모든 템플릿은 하단 푸터를 같은 3열 구조로 사용한다.
+모든 템플릿은 `templates/partials/fixed-footer.html`을 include해 하단 푸터를 같은 3열 구조로 사용한다.
 
 - 왼쪽: 기준 날짜 `date`
 - 가운데: 템플릿 종류, 주제 또는 예시 경고

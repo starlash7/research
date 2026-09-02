@@ -53,13 +53,9 @@
     {% endif %}
   </div>
 
-  <footer class="fixed-footer object-footer">
-    <span class="fixed-date num">{{ date }}</span>
-    <span class="footer-topic">{% if topic is defined and topic %}{{ topic }}{% endif %}</span>
-    <span class="brand-lockup">
-      <img class="logo logo-on-dark" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
-      <span>UNIT TX</span>
-    </span>
-  </footer>
+  {% set footer_class = "object-footer" %}
+  {% set footer_label = topic if topic is defined and topic else "" %}
+  {% set logo_treatment = "logo-on-dark" %}
+  {% include "partials/fixed-footer.html" %}
 </main>
 {% endblock %}

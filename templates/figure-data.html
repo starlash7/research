@@ -53,13 +53,9 @@
     {% endfor %}
   </section>
 
-  <footer class="fixed-footer figure-footer">
-    <span class="fixed-date num">{{ date }}</span>
-    <span class="footer-topic">{{ note|default("DATA FIGURE") }}</span>
-    <span class="brand-lockup">
-      <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
-      <span>UNIT TX</span>
-    </span>
-  </footer>
+  {% set footer_class = "figure-footer" %}
+  {% set footer_label = note|default("DATA FIGURE") %}
+  {% set logo_treatment = "logo-on-light" %}
+  {% include "partials/fixed-footer.html" %}
 </main>
 {% endblock %}

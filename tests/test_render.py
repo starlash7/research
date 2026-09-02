@@ -311,6 +311,12 @@ class HtmlTests(unittest.TestCase):
         self.assertIn("right: 6%;", styles)
         self.assertIn("bottom: 6%;", styles)
 
+    def test_all_templates_include_the_shared_fixed_footer_partial(self):
+        for template in ("cover-editorial", "cover-object", "figure-data", "figure-framework"):
+            source = Path("templates", f"{template}.html").read_text(encoding="utf-8")
+            with self.subTest(template=template):
+                self.assertIn('{% include "partials/fixed-footer.html" %}', source)
+
     def test_framework_renders_nodes_and_connectors(self):
         html = render_html(framework_document(), Path("examples/figure-framework.json"))
         self.assertEqual(html.count('class="framework-node"'), 3)
