@@ -216,6 +216,14 @@ class DocumentationTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, goal)
 
+    def test_docs_define_category_and_dark_gradient(self):
+        docs = Path("docs/IMAGE_SYSTEM.md").read_text(encoding="utf-8")
+        goal = Path("goal.md").read_text(encoding="utf-8")
+        for phrase in ("category", "차콜", "스모크", "딥블루"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, docs)
+                self.assertIn(phrase, goal)
+
     def test_typography_uses_local_suit_variable_font(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")
         self.assertIn('font-family: "SUIT Variable"', styles)

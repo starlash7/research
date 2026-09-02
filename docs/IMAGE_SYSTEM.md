@@ -7,7 +7,7 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 | 템플릿 | 크기 | 용도 |
 | --- | ---: | --- |
 | `cover-editorial` | 1440×756 | 기본 리서치 커버, 밝은 배경 |
-| `cover-object` | 1440×756 | 프로젝트 또는 프로토콜 중심 커버, 어두운 시그널맵 |
+| `cover-object` | 1440×756 | 프로젝트 또는 프로토콜 중심 커버, 어두운 그라데이션 |
 | `figure-framework` | 1440×810 | 구조도, 단계, 트랜잭션 흐름 |
 | `figure-data` | 1440×1200 | 차트와 핵심 수치 |
 
@@ -21,7 +21,7 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 - 테마는 이미지 한 장 안에서 바꾸지 않는다.
 - 모서리 반경은 정보 카드와 이미지 프레임에 28px로 통일한다. 커버의 독립 장식 요소는 원형만 쓴다.
 - 밝은 계열은 흰색 `#FFFFFF` 배경과 토스 공식 브랜드의 Toss Blue를 참고한 UNIT TX Blue `#0064FF`를 기본으로 한다. 토스 로고나 기타 브랜드 자산은 사용하지 않는다. 데이터 시리즈는 `#123B7A`, `#0C78B7`까지 같은 블루 계열 안에서 구분한다. 색상 참고: <https://brand.toss.im/>
-- 어두운 계열은 뉴트럴 블랙 `#0A0A0A` 배경과 타이포그래피만 기본으로 사용한다. 그리드, 임의 그래프, 생성 심볼은 넣지 않는다. `hero_image`가 입력된 경우에만 실제 이미지를 오른쪽에 표시한다.
+- 어두운 계열은 차콜 `#111318`, 스모크, 딥블루를 겹친 저채도 그라데이션을 사용한다. 단색 검정, 그리드, 임의 그래프, 생성 심볼은 넣지 않는다. `hero_image`가 입력된 경우에만 실제 이미지를 오른쪽에 표시한다.
 - 전경은 `#0C1B33` 또는 어두운 배경의 `#F4F7FF`를 사용한다.
 
 ## 고정 하단 푸터
@@ -75,7 +75,7 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 | `date` | 기준일 | `YYYY.MM.DD` 권장 |
 | `accent` | 선택 강조색 | `#RRGGBB`, 생략 시 UNIT TX Blue `#0064FF` |
 
-커버는 `subtitle`과 선택 `author`를 추가한다. 장식용 분류 문구 필드는 사용하지 않는다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 어떤 대체 그래픽도 생성하지 않고 타이포그래피와 빈 공간만 표시한다.
+두 커버는 왼쪽 위에 표시할 `category`와 본문 `subtitle`이 필수다. `category`는 영문 24자 폭 이내의 짧고 구체적인 분류명을 사용한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 어떤 대체 그래픽도 생성하지 않고 그라데이션과 빈 공간만 표시한다.
 
 ### 밝은 에디토리얼 커버
 
@@ -83,18 +83,20 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 {
   "template": "cover-editorial",
   "slug": "onchain-adoption-cover",
+  "category": "ONCHAIN RESEARCH",
   "title": "온체인 금융은\n어디에서 쓰이는가",
   "subtitle": "결제와 송금이 실제 사용으로 넘어가는 조건을 추적한다.",
   "date": "2026.09.01"
 }
 ```
 
-### 어두운 시그널맵 커버
+### 어두운 그라데이션 커버
 
 ```json
 {
   "template": "cover-object",
   "slug": "stablecoin-payment-cover",
+  "category": "STABLECOINS",
   "title": "스테이블코인은\n결제 인프라가 되는가",
   "subtitle": "유동성과 정산 경로가 사용성을 결정한다.",
   "date": "2026.09.01"
@@ -174,7 +176,7 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 ## 제작 순서
 
 1. 가장 가까운 `examples/*.json`을 복제한다.
-2. `slug`, 제목, 본문, 날짜, 출처와 데이터를 바꾼다.
+2. `slug`, `category`, 제목, 본문, 날짜, 출처와 데이터를 바꾼다.
 3. 로컬 이미지가 필요하면 JSON 파일 하위 경로에 저장하고 `hero_image`를 지정한다.
 4. 한 장을 렌더해 제목 줄바꿈과 데이터 라벨을 확인한다.
 5. 테스트와 전체 렌더를 실행한다.
