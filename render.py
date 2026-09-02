@@ -22,8 +22,8 @@ ENV = Environment(
     autoescape=True,
     undefined=StrictUndefined,
 )
-DEFAULT_ACCENT = "#E84B18"
-SERIES_COLORS = (DEFAULT_ACCENT, "#2563A6", "#167547")
+DEFAULT_ACCENT = "#2F6BFF"
+SERIES_COLORS = (DEFAULT_ACCENT, "#123B7A", "#0C78B7")
 
 
 @dataclass(frozen=True)

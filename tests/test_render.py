@@ -10,6 +10,7 @@ import tempfile
 from pathlib import Path
 
 from render import (
+    DEFAULT_ACCENT,
     TEMPLATES,
     build_context,
     load_document,
@@ -86,6 +87,9 @@ def framework_document(**overrides):
 
 
 class ValidationTests(unittest.TestCase):
+    def test_unit_tx_uses_blue_as_the_default_accent(self):
+        self.assertEqual(DEFAULT_ACCENT, "#2F6BFF")
+
     def test_every_template_has_fixed_dimensions(self):
         self.assertEqual(TEMPLATES["cover-editorial"].size, (1440, 756))
         self.assertEqual(TEMPLATES["cover-object"].size, (1440, 756))
@@ -246,6 +250,21 @@ class HtmlTests(unittest.TestCase):
         html = render_html(object_cover_document(), Path("examples/cover-object.json"))
         self.assertIn("unit-tx-logo.png", html)
         self.assertIn("logo-on-dark", html)
+
+    def test_dark_cover_uses_signal_map_instead_of_an_object(self):
+        html = render_html(object_cover_document(), Path("examples/cover-object.json"))
+        self.assertIn("signal-map", html)
+        self.assertNotIn("fallback-object", html)
+
+    def test_bright_templates_use_the_blue_accent(self):
+        for document, path in (
+            (cover_document(), Path("examples/cover-editorial.json")),
+            (data_document(), Path("examples/figure-data.json")),
+            (framework_document(), Path("examples/figure-framework.json")),
+        ):
+            with self.subTest(template=document["template"]):
+                html = render_html(document, path)
+                self.assertIn("--accent: #2F6BFF", html)
 
     def test_framework_renders_nodes_and_connectors(self):
         html = render_html(framework_document(), Path("examples/figure-framework.json"))

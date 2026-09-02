@@ -39,7 +39,7 @@ cp examples/cover-editorial.json examples/my-research-cover.json
 | 이름 | 크기 | 용도 |
 | --- | ---: | --- |
 | `cover-editorial` | 1440×756 | 밝은 에디토리얼 메인 커버 |
-| `cover-object` | 1440×756 | 오브젝트 중심의 어두운 커버 |
+| `cover-object` | 1440×756 | blueprint signal map 중심의 어두운 커버 |
 | `figure-framework` | 1440×810 | 구조도와 흐름도 |
 | `figure-data` | 1440×1200 | 라인 또는 막대 차트와 KPI |
 

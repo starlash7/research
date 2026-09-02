@@ -12,6 +12,8 @@
 
 - Canonical outputs are exactly 1440×756 (`cover`), 1440×810 (`wide`), and 1440×1200 (`data`).
 - The supplied 738×694 UNIT TX symbol must remain unaltered.
+- Bright templates use a white `#FFFFFF` field with UNIT TX blue `#2F6BFF` as the default signal color.
+- The dark cover uses a deep navy blueprint grid and connected signal map, not a decorative 3D object.
 - Standard example rendering must not require a network request.
 - Quantitative figures require a source and as-of date.
 - Cover titles may occupy at most two intentional lines.
@@ -170,7 +172,7 @@ Expected: failures because context building and templates are absent.
 The templates must meet these concrete content contracts:
 
 - `cover-editorial`: category pill, maximum two-line title, subtitle, date, author, topic index, exact logo, and CSS topic glyph.
-- `cover-object`: eyebrow, title, subtitle, date, exact logo, optional resolved local `hero_uri`, and complete CSS fallback object.
+- `cover-object`: eyebrow, title, subtitle, date, exact logo, optional resolved local `hero_uri`, and complete CSS signal-map fallback.
 - `figure-data`: claim, source, date, legend, SVG line or bar chart, y-axis tick labels, x labels, units, and one to three takeaway cards.
 - `figure-framework`: eyebrow, title, source, date, three to five numbered nodes, visible directional connectors, and a summary statement.
 

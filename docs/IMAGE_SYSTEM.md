@@ -7,7 +7,7 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 | 템플릿 | 크기 | 용도 |
 | --- | ---: | --- |
 | `cover-editorial` | 1440×756 | 기본 리서치 커버, 밝은 배경 |
-| `cover-object` | 1440×756 | 프로젝트 또는 프로토콜 중심 커버, 어두운 배경 |
+| `cover-object` | 1440×756 | 프로젝트 또는 프로토콜 중심 커버, 어두운 시그널맵 |
 | `figure-framework` | 1440×810 | 구조도, 단계, 트랜잭션 흐름 |
 | `figure-data` | 1440×1200 | 차트와 핵심 수치 |
 
@@ -20,8 +20,9 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 - Visual density 5: 한 장에 하나의 주장만 두고 근거와 출처는 생략하지 않는다.
 - 테마는 이미지 한 장 안에서 바꾸지 않는다.
 - 모서리 반경은 정보 카드에만 18px로 통일한다. 커버의 장식 요소는 원형 또는 캡슐만 쓴다.
-- 강조색은 `#E84B18` 하나를 기본으로 한다. 상승과 하락 색상은 차트 의미가 있을 때만 사용한다.
-- 배경은 `#F4F3EF`, 전경은 `#0B0C0D`를 기본으로 하며 순백과 순흑의 강한 대비를 피한다.
+- 밝은 계열은 흰색 `#FFFFFF` 배경과 UNIT TX blue `#2F6BFF`를 기본으로 한다. 데이터 시리즈는 `#123B7A`, `#0C78B7`까지 같은 블루 계열 안에서 구분한다.
+- 어두운 계열은 deep navy `#071426` 배경과 blueprint grid, signal map을 사용한다. 밝은 계열과 같은 블루를 쓰되 3D 메탈 오브젝트 대신 시스템 흐름을 보여준다.
+- 전경은 `#0C1B33` 또는 어두운 배경의 `#F4F7FF`를 사용한다.
 
 ## 설치
 
@@ -63,9 +64,9 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 | `slug` | 결과 파일명 | 영문 소문자, 숫자, 하이픈 |
 | `title` | 핵심 주장 | 커버는 최대 두 줄 |
 | `date` | 기준일 | `YYYY.MM.DD` 권장 |
-| `accent` | 선택 강조색 | `#RRGGBB`, 생략 시 UNIT TX orange |
+| `accent` | 선택 강조색 | `#RRGGBB`, 생략 시 UNIT TX blue `#2F6BFF` |
 
-커버는 `eyebrow`, `subtitle`, 선택 `author`를 추가한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 UNIT TX 심볼에서 파생한 CSS 오브젝트가 표시된다.
+커버는 `eyebrow`, `subtitle`, 선택 `author`를 추가한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 UNIT TX 심볼을 중심으로 한 blueprint signal map이 표시된다. 기본 구성은 메탈 구체나 3D 제품 샷과 구분되는 시스템·라우팅 시각 언어를 따른다.
 
 ### 밝은 에디토리얼 커버
 
@@ -83,7 +84,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 }
 ```
 
-### 어두운 오브젝트 커버
+### 어두운 시그널맵 커버
 
 ```json
 {
@@ -152,7 +153,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 - 항목별 크기 비교에는 `bar`를 쓴다.
 - 파이, 도넛, 3D 차트는 지원하지 않는다. 작은 화면에서 비교가 어렵고 장식적 왜곡이 크기 때문이다.
 - 값이 8개를 넘으면 렌더러는 첫 값과 마지막 값만 직접 표시해 라벨 겹침을 줄인다.
-- 시리즈가 두 개 이상이면 색상뿐 아니라 실선과 점선도 함께 사용한다.
+- 시리즈가 두 개 이상이면 블루 계열 색상뿐 아니라 실선과 점선도 함께 사용한다.
 
 ## 글자와 안전 여백
 

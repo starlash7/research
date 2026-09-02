@@ -13,10 +13,43 @@
 
   <div class="object-stage" aria-hidden="true">
     {% if hero_uri %}
-      <img class="hero-image" src="{{ hero_uri }}" alt="">
+      <div class="atlas-media-frame">
+        <img class="hero-image" src="{{ hero_uri }}" alt="">
+        <span class="atlas-media-label">LOCAL IMAGE / INPUT</span>
+      </div>
     {% else %}
-      <div class="fallback-object">
-        <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="">
+      <div class="signal-map">
+        <div class="signal-map-grid"></div>
+        <div class="signal-map-header">
+          <span>SIGNAL MAP</span>
+          <span>FIELD 01</span>
+        </div>
+        <span class="signal-route signal-route-a"></span>
+        <span class="signal-route signal-route-b"></span>
+        <span class="signal-route signal-route-c"></span>
+        <span class="signal-node signal-node-origin">
+          <span class="signal-node-dot"></span>
+          <span>ORIGIN</span>
+        </span>
+        <span class="signal-node signal-node-route">
+          <span class="signal-node-dot"></span>
+          <span>ROUTING</span>
+        </span>
+        <span class="signal-node signal-node-settle">
+          <span class="signal-node-dot"></span>
+          <span>SETTLEMENT</span>
+        </span>
+        <span class="signal-node signal-node-output">
+          <span class="signal-node-dot"></span>
+          <span>OUTPUT</span>
+        </span>
+        <div class="signal-core">
+          <img class="logo logo-on-dark" src="{{ assets_uri }}/unit-tx-logo.png" alt="">
+        </div>
+        <div class="signal-map-footer">
+          <span>ROUTING LAYER</span>
+          <span>ACTIVE</span>
+        </div>
       </div>
     {% endif %}
   </div>
