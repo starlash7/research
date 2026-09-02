@@ -19,7 +19,7 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 - Motion intensity 1: 결과물이 정적 PNG이므로 애니메이션을 사용하지 않는다.
 - Visual density 5: 한 장에 하나의 주장만 두고 근거와 출처는 생략하지 않는다.
 - 테마는 이미지 한 장 안에서 바꾸지 않는다.
-- 모서리 반경은 정보 카드에만 18px로 통일한다. 커버의 장식 요소는 원형 또는 캡슐만 쓴다.
+- 모서리 반경은 정보 카드와 이미지 프레임에 28px로 통일한다. 커버의 독립 장식 요소는 원형만 쓴다.
 - 밝은 계열은 흰색 `#FFFFFF` 배경과 토스 공식 브랜드의 Toss Blue를 참고한 UNIT TX Blue `#0064FF`를 기본으로 한다. 토스 로고나 기타 브랜드 자산은 사용하지 않는다. 데이터 시리즈는 `#123B7A`, `#0C78B7`까지 같은 블루 계열 안에서 구분한다. 색상 참고: <https://brand.toss.im/>
 - 어두운 계열은 deep navy `#071426` 배경과 blueprint grid, signal map을 사용한다. 밝은 계열과 같은 블루를 쓰되 3D 메탈 오브젝트 대신 시스템 흐름을 보여준다.
 - 전경은 `#0C1B33` 또는 어두운 배경의 `#F4F7FF`를 사용한다.
@@ -31,7 +31,7 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 - 왼쪽: 기준 날짜 `date`
 - 오른쪽: `assets/unit-tx-logo.png`와 `UNIT TX` 워드마크
 
-푸터 가운데에는 주제, 템플릿 종류, 예시 경고를 넣지 않는다. 예시 데이터 경고는 정량 이미지의 `source`에 표시한다. 공식 로고는 이미지의 다른 위치에 반복해서 넣지 않는다. 밝은 배경에서는 검정 로고와 `#0C1B33` 워드마크, 어두운 배경에서는 흰색 로고와 `#FFFFFF` 워드마크를 사용한다. 날짜를 제목 옆의 칩이나 상단 메타 영역에 별도로 반복하지 않는다.
+푸터 가운데에는 주제, 템플릿 종류, 예시 경고를 넣지 않는다. 예시 데이터 경고는 정량 이미지의 `source`에 표시한다. 공식 로고는 이미지의 다른 위치에 반복해서 넣지 않는다. 밝은 배경에서는 검정 로고, `#0C1B33` 워드마크와 날짜를 사용하고, 어두운 배경에서는 흰색 로고, `#FFFFFF` 워드마크와 날짜를 사용한다. 날짜를 제목 옆의 칩이나 상단 메타 영역에 별도로 반복하지 않는다.
 
 ## 설치
 
@@ -75,7 +75,7 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 | `date` | 기준일 | `YYYY.MM.DD` 권장 |
 | `accent` | 선택 강조색 | `#RRGGBB`, 생략 시 UNIT TX Blue `#0064FF` |
 
-커버는 `eyebrow`, `subtitle`, 선택 `author`를 추가한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 공식 로고를 반복하지 않는 blueprint signal map이 표시된다. 기본 구성은 메탈 구체나 3D 제품 샷과 구분되는 시스템·라우팅 시각 언어를 따른다.
+커버는 `subtitle`과 선택 `author`를 추가한다. 장식용 분류 문구 필드는 사용하지 않는다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 공식 로고를 반복하지 않는 blueprint signal map이 표시된다. 기본 구성은 메탈 구체나 3D 제품 샷과 구분되는 시스템·라우팅 시각 언어를 따른다.
 
 ### 밝은 에디토리얼 커버
 
@@ -83,8 +83,6 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 {
   "template": "cover-editorial",
   "slug": "onchain-adoption-cover",
-  "eyebrow": "ADOPTION BRIEF",
-  "index_label": "ONCHAIN / USE CASES",
   "title": "온체인 금융은\n어디에서 쓰이는가",
   "subtitle": "결제와 송금이 실제 사용으로 넘어가는 조건을 추적한다.",
   "date": "2026.09.01"
@@ -97,7 +95,6 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 {
   "template": "cover-object",
   "slug": "stablecoin-payment-cover",
-  "eyebrow": "SYSTEM NOTE",
   "title": "스테이블코인은\n결제 인프라가 되는가",
   "subtitle": "유동성과 정산 경로가 사용성을 결정한다.",
   "date": "2026.09.01"
@@ -139,7 +136,6 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 {
   "template": "figure-framework",
   "slug": "onchain-payment-framework",
-  "eyebrow": "TRANSACTION FLOW",
   "title": "온체인 결제는 세 개의 연결된 레이어로 완성된다",
   "source": "UNIT TX Research · conceptual framework",
   "date": "2026.09.01",

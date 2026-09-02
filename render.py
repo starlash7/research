@@ -37,17 +37,17 @@ TEMPLATES = {
     "cover-editorial": TemplateSpec(
         "cover-editorial.html",
         (1440, 756),
-        ("eyebrow", "title", "subtitle", "date"),
+        ("title", "subtitle", "date"),
     ),
     "cover-object": TemplateSpec(
         "cover-object.html",
         (1440, 756),
-        ("eyebrow", "title", "subtitle", "date"),
+        ("title", "subtitle", "date"),
     ),
     "figure-framework": TemplateSpec(
         "figure-framework.html",
         (1440, 810),
-        ("eyebrow", "title", "nodes", "source", "date"),
+        ("title", "nodes", "source", "date"),
     ),
     "figure-data": TemplateSpec(
         "figure-data.html",
@@ -56,9 +56,9 @@ TEMPLATES = {
     ),
 }
 TEXT_FIELDS = {
-    "cover-editorial": ("eyebrow", "title", "subtitle", "date"),
-    "cover-object": ("eyebrow", "title", "subtitle", "date"),
-    "figure-framework": ("eyebrow", "title", "source", "date"),
+    "cover-editorial": ("title", "subtitle", "date"),
+    "cover-object": ("title", "subtitle", "date"),
+    "figure-framework": ("title", "source", "date"),
     "figure-data": ("title", "source", "date"),
 }
 

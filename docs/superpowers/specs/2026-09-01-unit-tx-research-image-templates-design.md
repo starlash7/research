@@ -28,7 +28,7 @@ The renderer supports an optional 2× export for unusually high-resolution needs
 
 ### Editorial cover
 
-`cover-editorial` uses a white field, UNIT TX blue category pill, left-aligned title and subtitle, a restrained circular blue mark on the right, and the single UNIT TX lockup in the bottom-right footer. It is the default research cover.
+`cover-editorial` uses a white field, left-aligned title and subtitle, a restrained circular blue mark on the right, and the single UNIT TX lockup in the bottom-right footer. It is the default research cover and does not inject decorative category copy.
 
 ### Signal map cover
 

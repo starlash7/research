@@ -1,7 +1,6 @@
 {
   "template": "figure-framework",
   "slug": "onchain-payment-framework",
-  "eyebrow": "TRANSACTION FLOW",
   "title": "온체인 결제는 네 개의 연결된 레이어로 완성된다",
   "source": "UNIT TX Research · conceptual framework",
   "date": "2026.09.01",

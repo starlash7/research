@@ -2,7 +2,6 @@
 {% block canvas %}
 <main class="canvas figure-canvas">
   <header class="figure-header framework-header">
-    <p class="eyebrow">{{ eyebrow }}</p>
     <h1 class="figure-title">{{ title }}</h1>
     <p class="source-line">Source: {{ source }}</p>
   </header>
@@ -18,10 +17,11 @@
     {% endfor %}
   </section>
 
-  <section class="framework-summary">
-    <span class="summary-label">Key read</span>
-    <p class="summary-copy">{{ summary|default("각 단계의 마찰을 줄일수록 온체인 경험은 일반 결제에 가까워진다.") }}</p>
-  </section>
+  {% if summary is defined and summary %}
+    <section class="framework-summary">
+      <p class="summary-copy">{{ summary }}</p>
+    </section>
+  {% endif %}
 
   {% set footer_class = "figure-footer" %}
   {% set logo_treatment = "logo-on-light" %}

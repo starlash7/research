@@ -19,7 +19,7 @@
   --weight-regular: 500;
   --weight-medium: 600;
   --weight-bold: 800;
-  --radius: 18px;
+  --radius: 28px;
 }
 
 * {
@@ -87,14 +87,6 @@ body {
   height: 38px;
 }
 
-.eyebrow {
-  margin: 0;
-  font-size: 19px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
 .meta-row {
   display: flex;
   align-items: center;
@@ -124,36 +116,6 @@ body {
   background:
     radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 36%),
     var(--paper);
-}
-
-.cover-top {
-  position: absolute;
-  top: 52px;
-  left: 74px;
-  right: 74px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.cover-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 54px;
-  padding: 0 27px;
-  border-radius: 999px;
-  color: #ffffff;
-  background: var(--accent);
-  font-size: 20px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.035em;
-}
-
-.cover-index {
-  color: var(--muted);
-  font-size: 18px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.08em;
 }
 
 .editorial-copy {
@@ -247,30 +209,6 @@ body {
     repeating-linear-gradient(0deg, transparent 0, transparent 17px, rgba(255, 255, 255, 0.022) 18px);
 }
 
-.object-top {
-  position: absolute;
-  top: 53px;
-  left: 74px;
-  right: 74px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.object-top .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 17px;
-  color: #f4f7ff;
-}
-
-.object-top .eyebrow::before {
-  content: "";
-  width: 36px;
-  height: 3px;
-  background: var(--accent);
-}
-
 .object-copy {
   position: absolute;
   z-index: 3;
@@ -330,6 +268,7 @@ body {
   height: 100%;
   overflow: hidden;
   border: 1px solid rgba(169, 201, 243, 0.52);
+  border-radius: var(--radius);
   background: #0c203b;
   box-shadow: 18px 18px 0 rgba(0, 100, 255, 0.12);
 }
@@ -347,23 +286,13 @@ body {
   background-size: 48px 48px;
 }
 
-.atlas-media-label {
-  position: absolute;
-  z-index: 2;
-  left: 22px;
-  bottom: 18px;
-  color: #b9cbea;
-  font-size: 13px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.08em;
-}
-
 .signal-map {
   position: relative;
   width: 470px;
   height: 470px;
   overflow: hidden;
   border: 1px solid rgba(169, 201, 243, 0.58);
+  border-radius: var(--radius);
   background: rgba(11, 31, 57, 0.88);
   box-shadow: 18px 18px 0 rgba(0, 100, 255, 0.13);
 }
@@ -373,6 +302,7 @@ body {
   position: absolute;
   inset: 24px;
   border: 1px solid rgba(169, 201, 243, 0.22);
+  border-radius: calc(var(--radius) - 8px);
   pointer-events: none;
 }
 
@@ -395,35 +325,6 @@ body {
     linear-gradient(90deg, rgba(169, 201, 243, 0.075) 1px, transparent 1px);
   background-size: 47px 47px;
   opacity: 0.72;
-}
-
-.signal-map-header,
-.signal-map-footer {
-  position: absolute;
-  z-index: 4;
-  left: 24px;
-  right: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #a9bddb;
-  font-size: 13px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.09em;
-}
-
-.signal-map-header {
-  top: 24px;
-}
-
-.signal-map-header span:first-child,
-.signal-map-footer span:last-child {
-  color: var(--accent);
-}
-
-.signal-map-footer {
-  bottom: 24px;
-  color: #a9bddb;
 }
 
 .signal-route {
@@ -606,6 +507,7 @@ body {
 
 .fixed-date {
   justify-self: start;
+  color: var(--brand-on-light);
   font-size: 21px;
   font-weight: var(--weight-medium);
   letter-spacing: -0.01em;
@@ -629,7 +531,7 @@ body {
 }
 
 .object-footer .fixed-date {
-  color: #a9bddb;
+  color: var(--brand-on-dark);
 }
 
 .object-footer .brand-lockup {
@@ -763,11 +665,6 @@ body {
 }
 
 /* Framework figure */
-.framework-header .eyebrow {
-  margin-bottom: 18px;
-  color: var(--accent);
-}
-
 .framework-flow {
   position: absolute;
   top: 250px;
@@ -860,25 +757,13 @@ body {
   left: 68px;
   right: 68px;
   bottom: 102px;
-  display: flex;
-  align-items: flex-start;
-  gap: 28px;
   padding-top: 25px;
   border-top: 1px solid var(--ink);
 }
 
-.summary-label {
-  flex: none;
-  color: var(--accent);
-  font-size: 17px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .summary-copy {
   max-width: 1030px;
-  margin: -4px 0 0;
+  margin: 0;
   font-size: 27px;
   font-weight: var(--weight-medium);
   line-height: 1.38;

@@ -32,7 +32,6 @@ def cover_document(**overrides):
     document = {
         "template": "cover-editorial",
         "slug": "sample-cover",
-        "eyebrow": "ADOPTION BRIEF",
         "title": "온체인 결제의 다음 단계",
         "subtitle": "보유에서 실제 사용으로 이동하는 시장을 읽습니다.",
         "date": "2026.09.01",
@@ -74,7 +73,6 @@ def framework_document(**overrides):
     document = {
         "template": "figure-framework",
         "slug": "sample-framework",
-        "eyebrow": "TRANSACTION FLOW",
         "title": "온체인 결제는 네 단계로 완결된다",
         "source": "UNIT TX Research",
         "date": "2026.09.01",
@@ -133,7 +131,6 @@ class ValidationTests(unittest.TestCase):
         document = {
             "template": "figure-framework",
             "slug": "framework",
-            "eyebrow": "TRANSACTION FLOW",
             "title": "결제 트랜잭션의 흐름",
             "source": "UNIT TX Research",
             "date": "2026.09.01",
@@ -229,6 +226,11 @@ class DocumentationTests(unittest.TestCase):
 
 
 class HtmlTests(unittest.TestCase):
+    def test_templates_do_not_require_decorative_eyebrows(self):
+        for document in (cover_document(), object_cover_document(), framework_document()):
+            with self.subTest(template=document["template"]):
+                validate_document(document)
+
     def test_html_autoescapes_user_copy(self):
         document = cover_document(title="UNIT <script>alert(1)</script>")
         html = render_html(document, Path("examples/cover-editorial.json"))
@@ -340,6 +342,58 @@ class HtmlTests(unittest.TestCase):
                 self.assertNotIn("footer-topic", html)
                 self.assertNotIn("DUPLICATE TOPIC", html)
                 self.assertNotIn("DUPLICATE NOTE", html)
+
+    def test_templates_omit_decorative_and_fallback_copy(self):
+        documents = (
+            (
+                cover_document(
+                    eyebrow="ADOPTION BRIEF",
+                    index_label="ONCHAIN / USE CASES",
+                ),
+                Path("examples/cover-editorial.json"),
+            ),
+            (
+                object_cover_document(eyebrow="SYSTEM NOTE"),
+                Path("examples/cover-object.json"),
+            ),
+            (
+                framework_document(eyebrow="TRANSACTION FLOW"),
+                Path("examples/figure-framework.json"),
+            ),
+        )
+        forbidden = (
+            "ADOPTION BRIEF",
+            "ONCHAIN / USE CASES",
+            "SYSTEM NOTE",
+            "SIGNAL MAP",
+            "FIELD 01",
+            "ROUTING LAYER",
+            "ACTIVE",
+            "TRANSACTION FLOW",
+            "Key read",
+            "각 단계의 마찰을 줄일수록",
+            "LOCAL IMAGE / INPUT",
+        )
+        for document, path in documents:
+            html = render_html(document, path)
+            with self.subTest(template=document["template"]):
+                for copy in forbidden:
+                    self.assertNotIn(copy, html)
+
+    def test_dates_use_high_contrast_surface_colors(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertRegex(
+            styles,
+            r"\.fixed-date\s*\{[^}]*color: var\(--brand-on-light\);",
+        )
+        self.assertRegex(
+            styles,
+            r"\.object-footer \.fixed-date\s*\{[^}]*color: var\(--brand-on-dark\);",
+        )
+
+    def test_information_cards_use_the_rounder_shared_radius(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertIn("--radius: 28px;", styles)
 
     def test_brand_lockup_uses_one_color_per_surface(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")

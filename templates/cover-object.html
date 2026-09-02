@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block canvas %}
 <main class="canvas cover-object-canvas">
-  <header class="object-top">
-    <p class="eyebrow">{{ eyebrow }}</p>
-  </header>
-
   <section class="object-copy">
     <h1 class="object-title">{{ title }}</h1>
     <p class="object-subtitle">{{ subtitle }}</p>
@@ -14,15 +10,10 @@
     {% if hero_uri %}
       <div class="atlas-media-frame">
         <img class="hero-image" src="{{ hero_uri }}" alt="">
-        <span class="atlas-media-label">LOCAL IMAGE / INPUT</span>
       </div>
     {% else %}
       <div class="signal-map">
         <div class="signal-map-grid"></div>
-        <div class="signal-map-header">
-          <span>SIGNAL MAP</span>
-          <span>FIELD 01</span>
-        </div>
         <span class="signal-route signal-route-a"></span>
         <span class="signal-route signal-route-b"></span>
         <span class="signal-route signal-route-c"></span>
@@ -44,10 +35,6 @@
         </span>
         <div class="signal-core">
           <span class="signal-core-mark" aria-hidden="true"></span>
-        </div>
-        <div class="signal-map-footer">
-          <span>ROUTING LAYER</span>
-          <span>ACTIVE</span>
         </div>
       </div>
     {% endif %}

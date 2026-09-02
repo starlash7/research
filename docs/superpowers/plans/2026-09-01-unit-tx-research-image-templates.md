@@ -82,9 +82,9 @@ class TemplateSpec:
 
 
 TEMPLATES = {
-    "cover-editorial": TemplateSpec("cover-editorial.html", (1440, 756), ("eyebrow", "title", "subtitle", "date")),
-    "cover-object": TemplateSpec("cover-object.html", (1440, 756), ("eyebrow", "title", "subtitle", "date")),
-    "figure-framework": TemplateSpec("figure-framework.html", (1440, 810), ("eyebrow", "title", "nodes", "source", "date")),
+    "cover-editorial": TemplateSpec("cover-editorial.html", (1440, 756), ("title", "subtitle", "date")),
+    "cover-object": TemplateSpec("cover-object.html", (1440, 756), ("title", "subtitle", "date")),
+    "figure-framework": TemplateSpec("figure-framework.html", (1440, 810), ("title", "nodes", "source", "date")),
     "figure-data": TemplateSpec("figure-data.html", (1440, 1200), ("title", "source", "date", "chart", "takeaways")),
 }
 
@@ -174,10 +174,10 @@ Expected: failures because context building and templates are absent.
 
 The templates must meet these concrete content contracts:
 
-- `cover-editorial`: category pill, maximum two-line title, subtitle, optional author, bottom-left date, bottom-right exact logo, index label, and CSS visual glyph.
-- `cover-object`: eyebrow, title, subtitle, date, exact logo, optional resolved local `hero_uri`, and complete CSS signal-map fallback.
+- `cover-editorial`: maximum two-line title, subtitle, optional author, bottom-left date, bottom-right exact logo, and CSS visual glyph.
+- `cover-object`: title, subtitle, date, exact logo, optional resolved local `hero_uri`, and complete CSS signal-map fallback.
 - `figure-data`: claim, source, date, legend, SVG line or bar chart, y-axis tick labels, x labels, units, and one to three takeaway cards.
-- `figure-framework`: eyebrow, title, source, date, three to five numbered nodes, visible directional connectors, and a summary statement.
+- `figure-framework`: title, source, date, three to five numbered nodes, visible directional connectors, and an optional summary statement.
 
 - [ ] **Step 6: Implement chart enrichment and local hero resolution**
 
