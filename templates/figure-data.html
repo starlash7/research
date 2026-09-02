@@ -2,10 +2,7 @@
 {% block canvas %}
 <main class="canvas figure-canvas">
   <header class="figure-header">
-    <div class="figure-title-row">
-      <h1 class="figure-title">{% if highlight %}<span class="highlight">{{ highlight }}</span> {% endif %}{{ title }}</h1>
-      <span class="date-chip num">{{ date }}</span>
-    </div>
+    <h1 class="figure-title">{% if highlight %}<span class="highlight">{{ highlight }}</span> {% endif %}{{ title }}</h1>
     <p class="source-line">Source: {{ source }}</p>
   </header>
 
@@ -56,8 +53,9 @@
     {% endfor %}
   </section>
 
-  <footer class="figure-footer">
-    <span>{{ note|default("Research figure") }}</span>
+  <footer class="fixed-footer figure-footer">
+    <span class="fixed-date num">{{ date }}</span>
+    <span class="footer-topic">{{ note|default("DATA FIGURE") }}</span>
     <span class="brand-lockup">
       <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>

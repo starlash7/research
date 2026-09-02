@@ -3,7 +3,6 @@
 <main class="canvas cover-object-canvas">
   <header class="object-top">
     <p class="eyebrow">{{ eyebrow }}</p>
-    <span class="object-date num">{{ date }}</span>
   </header>
 
   <section class="object-copy">
@@ -44,7 +43,7 @@
           <span>OUTPUT</span>
         </span>
         <div class="signal-core">
-          <img class="logo logo-on-dark" src="{{ assets_uri }}/unit-tx-logo.png" alt="">
+          <span class="signal-core-mark" aria-hidden="true"></span>
         </div>
         <div class="signal-map-footer">
           <span>ROUTING LAYER</span>
@@ -54,18 +53,13 @@
     {% endif %}
   </div>
 
-  <footer class="object-footer">
+  <footer class="fixed-footer object-footer">
+    <span class="fixed-date num">{{ date }}</span>
+    <span class="footer-topic">{% if topic is defined and topic %}{{ topic }}{% endif %}</span>
     <span class="brand-lockup">
       <img class="logo logo-on-dark" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>
     </span>
-    {% if (author is defined and author) or (topic is defined and topic) %}
-      <span class="meta-row">
-        {% if author is defined and author %}<span>{{ author }}</span>{% endif %}
-        {% if author is defined and author and topic is defined and topic %}<span class="meta-separator"></span>{% endif %}
-        {% if topic is defined and topic %}<span>{{ topic }}</span>{% endif %}
-      </span>
-    {% endif %}
   </footer>
 </main>
 {% endblock %}

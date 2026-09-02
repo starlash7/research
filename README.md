@@ -1,6 +1,6 @@
 # UNIT TX Research Images
 
-UNIT TX의 Substack 리서치 커버와 본문 이미지를 JSON에서 PNG로 만드는 템플릿 저장소다. 제목, 데이터, 출처만 바꾸면 같은 브랜드 규칙으로 이미지를 반복 제작할 수 있다.
+UNIT TX의 Substack 리서치 커버와 본문 이미지를 JSON에서 PNG로 만드는 템플릿 저장소다. 저장소를 clone한 뒤 자료와 데이터만 바꾸면 같은 브랜드 규칙으로 이미지를 반복 제작할 수 있다. 저장소의 목표와 고정 계약은 [goal.md](goal.md)에 정리한다.
 
 ## 빠른 시작
 
@@ -21,7 +21,7 @@ out/
 └── token-survival-example.png       1440×1200
 ```
 
-한 장만 만들려면 예제 JSON을 복제한 뒤 파일 경로를 넘긴다.
+한 장만 만들려면 예제 JSON을 복제한 뒤 자료와 데이터만 바꾸고 파일 경로를 넘긴다.
 
 ```bash
 cp examples/cover-editorial.json examples/my-research-cover.json
@@ -42,6 +42,8 @@ cp examples/cover-editorial.json examples/my-research-cover.json
 | `cover-object` | 1440×756 | blueprint signal map 중심의 어두운 커버 |
 | `figure-framework` | 1440×810 | 구조도와 흐름도 |
 | `figure-data` | 1440×1200 | 라인 또는 막대 차트와 KPI |
+
+모든 템플릿은 날짜를 왼쪽 아래, UNIT TX 로고를 오른쪽 아래에 고정한다. 밝은 계열은 흰색과 UNIT TX Blue `#0064FF`, 어두운 커버는 deep navy signal map을 사용한다.
 
 ## 저장소 구조
 

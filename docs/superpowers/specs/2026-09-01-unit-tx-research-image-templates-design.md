@@ -28,7 +28,7 @@ The renderer supports an optional 2× export for unusually high-resolution needs
 
 ### Editorial cover
 
-`cover-editorial` uses a white field, UNIT TX blue category pill and topic signal, black UNIT TX mark, left-aligned title and subtitle, and a restrained circular mark on the right. It is the default research cover.
+`cover-editorial` uses a white field, UNIT TX blue category pill and topic signal, left-aligned title and subtitle, a restrained circular blue mark on the right, and the single black UNIT TX lockup in the bottom-right footer. It is the default research cover.
 
 ### Signal map cover
 
@@ -44,7 +44,7 @@ The renderer supports an optional 2× export for unusually high-resolution needs
 
 ## Brand System
 
-The supplied 738×694 UNIT TX symbol is the canonical logo asset. It remains unaltered. On light surfaces it is rendered black with multiply blending; on dark surfaces it is inverted and rendered white with screen blending. This removes the screenshot's white field visually without redrawing or approximating the logo.
+The supplied 738×694 UNIT TX symbol is the canonical logo asset. It remains unaltered and appears once in the bottom-right footer of every template. On light surfaces it is rendered black with multiply blending; on dark surfaces it is inverted and rendered white with screen blending. This removes the screenshot's white field visually without redrawing or approximating the logo. Every template places its date in the bottom-left footer.
 
 The revised palette is intentionally restrained and blue-led:
 
@@ -56,6 +56,8 @@ The revised palette is intentionally restrained and blue-led:
 - deep navy: `#071426`
 - series navy: `#123B7A`
 - series blue: `#0C78B7`
+
+The footer is a shared three-column contract: date left, optional template or usage label centered, and the UNIT TX lockup right. Decorative visual areas do not repeat the official logo.
 
 Pretendard Variable is the primary Korean and Latin typeface. A local font asset is bundled so browser and machine differences cannot change line breaks. Monospace labels use the platform monospace fallback only for short metadata.
 

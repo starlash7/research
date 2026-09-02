@@ -9,25 +9,18 @@
   <section class="editorial-copy">
     <h1 class="editorial-title">{{ title }}</h1>
     <p class="editorial-subtitle">{{ subtitle }}</p>
-    <div class="meta-row editorial-byline">
-      {% if author is defined and author %}
-        <span>{{ author }}</span>
-        <span class="meta-separator"></span>
-      {% endif %}
-      <span class="num">{{ date }}</span>
-    </div>
+    {% if author is defined and author %}<div class="meta-row editorial-byline"><span>{{ author }}</span></div>{% endif %}
   </section>
 
-  <div class="editorial-visual" aria-hidden="true">
-    <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="">
-  </div>
+  <div class="editorial-visual" aria-hidden="true"></div>
 
-  <footer class="cover-footer">
+  <footer class="fixed-footer cover-footer">
+    <span class="fixed-date num">{{ date }}</span>
+    <span class="footer-topic">{% if topic is defined and topic %}{{ topic }}{% endif %}</span>
     <span class="brand-lockup">
       <img class="logo logo-on-light" src="{{ assets_uri }}/unit-tx-logo.png" alt="UNIT TX">
       <span>UNIT TX</span>
     </span>
-    {% if topic is defined and topic %}<span class="editorial-topic">{{ topic }}</span>{% endif %}
   </footer>
 </main>
 {% endblock %}

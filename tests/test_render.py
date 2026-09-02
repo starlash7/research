@@ -198,6 +198,14 @@ class ValidationTests(unittest.TestCase):
             validate_document(document)
 
 
+class DocumentationTests(unittest.TestCase):
+    def test_goal_defines_clone_and_data_only_workflow(self):
+        goal = Path("goal.md").read_text(encoding="utf-8")
+        for phrase in ("clone", "자료와 데이터", "일관된", "render.py"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, goal)
+
+
 class HtmlTests(unittest.TestCase):
     def test_html_autoescapes_user_copy(self):
         document = cover_document(title="UNIT <script>alert(1)</script>")
@@ -280,6 +288,28 @@ class HtmlTests(unittest.TestCase):
     def test_framework_source_is_not_repeated_in_the_footer(self):
         html = render_html(framework_document(), Path("examples/figure-framework.json"))
         self.assertEqual(html.count("UNIT TX Research"), 1)
+
+    def test_every_template_uses_one_fixed_bottom_date_and_logo(self):
+        documents = (
+            (cover_document(), Path("examples/cover-editorial.json")),
+            (object_cover_document(), Path("examples/cover-object.json")),
+            (data_document(), Path("examples/figure-data.json")),
+            (framework_document(), Path("examples/figure-framework.json")),
+        )
+        for document, path in documents:
+            with self.subTest(template=document["template"]):
+                html = render_html(document, path)
+                self.assertIn('class="fixed-footer', html)
+                self.assertIn('class="fixed-date num"', html)
+                self.assertEqual(html.count("unit-tx-logo.png"), 1)
+                self.assertNotIn("date-chip", html)
+                self.assertNotIn("object-date", html)
+
+    def test_fixed_footer_uses_the_six_percent_safe_area(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+        self.assertIn("left: 6%;", styles)
+        self.assertIn("right: 6%;", styles)
+        self.assertIn("bottom: 6%;", styles)
 
     def test_framework_renders_nodes_and_connectors(self):
         html = render_html(framework_document(), Path("examples/figure-framework.json"))

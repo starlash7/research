@@ -24,6 +24,16 @@ UNIT TX의 Substack 커버와 본문용 리서치 이미지를 JSON에서 재현
 - 어두운 계열은 deep navy `#071426` 배경과 blueprint grid, signal map을 사용한다. 밝은 계열과 같은 블루를 쓰되 3D 메탈 오브젝트 대신 시스템 흐름을 보여준다.
 - 전경은 `#0C1B33` 또는 어두운 배경의 `#F4F7FF`를 사용한다.
 
+## 고정 하단 푸터
+
+모든 템플릿은 하단 푸터를 같은 3열 구조로 사용한다.
+
+- 왼쪽: 기준 날짜 `date`
+- 가운데: 템플릿 종류, 주제 또는 예시 경고
+- 오른쪽: `assets/unit-tx-logo.png`와 `UNIT TX` 워드마크
+
+공식 로고는 이미지의 다른 위치에 반복해서 넣지 않는다. 밝은 배경에서는 검정 로고, 어두운 배경에서는 흰색 로고를 사용한다. 날짜를 제목 옆의 칩이나 상단 메타 영역에 별도로 반복하지 않는다.
+
 ## 설치
 
 ```bash
@@ -66,7 +76,7 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 | `date` | 기준일 | `YYYY.MM.DD` 권장 |
 | `accent` | 선택 강조색 | `#RRGGBB`, 생략 시 UNIT TX Blue `#0064FF` |
 
-커버는 `eyebrow`, `subtitle`, 선택 `author`를 추가한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 UNIT TX 심볼을 중심으로 한 blueprint signal map이 표시된다. 기본 구성은 메탈 구체나 3D 제품 샷과 구분되는 시스템·라우팅 시각 언어를 따른다.
+커버는 `eyebrow`, `subtitle`, 선택 `author`를 추가한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 공식 로고를 반복하지 않는 blueprint signal map이 표시된다. 기본 구성은 메탈 구체나 3D 제품 샷과 구분되는 시스템·라우팅 시각 언어를 따른다.
 
 ### 밝은 에디토리얼 커버
 
@@ -183,3 +193,4 @@ Pretendard Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 �
 - 모바일 폭으로 축소해도 핵심 수치가 읽히는가?
 - 로고에 흰색 또는 검정 사각형이 보이지 않는가?
 - 외곽 6% 안으로 핵심 텍스트가 들어오지 않았는가?
+- 날짜가 왼쪽 아래, 공식 로고가 오른쪽 아래에 한 번씩만 있는가?
