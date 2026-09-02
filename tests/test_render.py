@@ -32,6 +32,7 @@ def cover_document(**overrides):
     document = {
         "template": "cover-editorial",
         "slug": "sample-cover",
+        "category": "ONCHAIN RESEARCH",
         "title": "온체인 결제의 다음 단계",
         "subtitle": "보유에서 실제 사용으로 이동하는 시장을 읽습니다.",
         "date": "2026.09.01",
@@ -112,6 +113,18 @@ class ValidationTests(unittest.TestCase):
             document.pop(missing)
             with self.subTest(missing=missing), self.assertRaisesRegex(ValueError, missing):
                 validate_document(document)
+
+    def test_both_covers_require_category(self):
+        for document in (cover_document(), object_cover_document()):
+            document.pop("category")
+            with self.subTest(template=document["template"]), self.assertRaisesRegex(
+                ValueError, "category"
+            ):
+                validate_document(document)
+
+    def test_cover_category_has_a_fixed_display_width_limit(self):
+        with self.assertRaisesRegex(ValueError, "category"):
+            validate_document(cover_document(category="A" * 25))
 
     def test_cover_rejects_more_than_two_title_lines(self):
         document = cover_document(title="첫째 줄\n둘째 줄\n셋째 줄")
@@ -236,6 +249,22 @@ class HtmlTests(unittest.TestCase):
         html = render_html(document, Path("examples/cover-editorial.json"))
         self.assertNotIn("<script>", html)
         self.assertIn("&lt;script&gt;", html)
+
+    def test_both_covers_render_one_category(self):
+        for document, path in (
+            (
+                cover_document(category="ONCHAIN & RESEARCH"),
+                Path("examples/cover-editorial.json"),
+            ),
+            (
+                object_cover_document(category="ONCHAIN & RESEARCH"),
+                Path("examples/cover-object.json"),
+            ),
+        ):
+            with self.subTest(template=document["template"]):
+                html = render_html(document, path)
+                self.assertEqual(html.count('class="cover-category"'), 1)
+                self.assertIn("ONCHAIN &amp; RESEARCH", html)
 
     def test_line_chart_context_contains_svg_points_and_ticks(self):
         document = data_document()

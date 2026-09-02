@@ -37,12 +37,12 @@ TEMPLATES = {
     "cover-editorial": TemplateSpec(
         "cover-editorial.html",
         (1440, 756),
-        ("title", "subtitle", "date"),
+        ("category", "title", "subtitle", "date"),
     ),
     "cover-object": TemplateSpec(
         "cover-object.html",
         (1440, 756),
-        ("title", "subtitle", "date"),
+        ("category", "title", "subtitle", "date"),
     ),
     "figure-framework": TemplateSpec(
         "figure-framework.html",
@@ -56,8 +56,8 @@ TEMPLATES = {
     ),
 }
 TEXT_FIELDS = {
-    "cover-editorial": ("title", "subtitle", "date"),
-    "cover-object": ("title", "subtitle", "date"),
+    "cover-editorial": ("category", "title", "subtitle", "date"),
+    "cover-object": ("category", "title", "subtitle", "date"),
     "figure-framework": ("title", "source", "date"),
     "figure-data": ("title", "source", "date"),
 }
@@ -161,6 +161,8 @@ def validate_document(document: dict[str, Any]) -> TemplateSpec:
     text = {key: _require_text(document, key) for key in TEXT_FIELDS[template_name]}
     title = text["title"]
     if template_name.startswith("cover-"):
+        if _display_width(text["category"]) > 24:
+            raise ValueError("cover category는 영문 24자 폭 이하여야 합니다")
         if title.count("\n") > 1:
             raise ValueError("커버 제목은 최대 두 줄까지 사용할 수 있습니다")
         if any(_display_width(line) > 30 for line in title.splitlines()):
