@@ -394,17 +394,17 @@ class HtmlTests(unittest.TestCase):
                 for copy in forbidden:
                     self.assertNotIn(copy, html)
 
-    def test_dates_use_high_contrast_surface_colors(self):
+    def test_all_dates_use_exact_black_text(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")
         self.assertIn("--date-on-light: #000000;", styles)
-        self.assertIn("--date-on-dark: #ffffff;", styles)
+        self.assertNotIn("--date-on-dark", styles)
         self.assertRegex(
             styles,
             r"\.fixed-date\s*\{[^}]*color: var\(--date-on-light\);",
         )
         self.assertRegex(
             styles,
-            r"\.object-footer \.fixed-date\s*\{[^}]*color: var\(--date-on-dark\);",
+            r"\.object-footer \.fixed-date\s*\{[^}]*color: var\(--date-on-light\);[^}]*background: #ffffff;",
         )
 
     def test_information_cards_use_the_rounder_shared_radius(self):
