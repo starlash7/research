@@ -75,18 +75,19 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 | `date` | 기준일 | `YYYY.MM.DD` 권장 |
 | `accent` | 선택 강조색 | `#RRGGBB`, 생략 시 UNIT TX Blue `#0064FF` |
 
-두 커버는 왼쪽 위에 표시할 `category`와 본문 `subtitle`이 필수다. `category`는 영문 24자 폭 이내의 짧고 구체적인 분류명을 사용한다. `cover-object`는 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 경로가 없으면 어떤 대체 그래픽도 생성하지 않고 그라데이션과 빈 공간만 표시한다.
+두 커버는 왼쪽 위에 표시할 `category`와 본문 `subtitle`이 필수다. `category`는 영문 24자 폭 이내의 짧고 구체적인 분류명을 사용한다. 두 커버 모두 JSON과 같은 폴더 아래의 로컬 파일을 `hero_image`로 지정할 수 있다. 밝은 커버에 경로가 없으면 UNIT TX Blue 에디토리얼 원형을 표시하고, 어두운 커버에 경로가 없으면 어떤 대체 그래픽도 생성하지 않고 그라데이션과 빈 공간만 표시한다.
 
 ### 밝은 에디토리얼 커버
 
 ```json
 {
   "template": "cover-editorial",
-  "slug": "onchain-adoption-cover",
-  "category": "ONCHAIN RESEARCH",
-  "title": "온체인 금융은\n어디에서 쓰이는가",
-  "subtitle": "결제와 송금이 실제 사용으로 넘어가는 조건을 추적한다.",
-  "date": "2026.09.01"
+  "slug": "bitcoin-use-cover",
+  "category": "BITCOIN RESEARCH",
+  "title": "비트코인은\n어디에서 쓰이는가",
+  "subtitle": "보유 자산을 넘어 결제와 준비자산으로 확장되는 흐름을 추적한다.",
+  "date": "2026.09.03",
+  "hero_image": "art/bitcoin-logo.png"
 }
 ```
 
@@ -95,15 +96,16 @@ SUIT Variable은 SIL Open Font License 1.1로 배포되는 오픈 소스 글꼴�
 ```json
 {
   "template": "cover-object",
-  "slug": "stablecoin-payment-cover",
-  "category": "STABLECOINS",
-  "title": "스테이블코인은\n결제 인프라가 되는가",
-  "subtitle": "유동성과 정산 경로가 사용성을 결정한다.",
-  "date": "2026.09.01"
+  "slug": "bitcoin-reserve-cover",
+  "category": "BITCOIN OUTLOOK",
+  "title": "비트코인은\n준비자산이 되는가",
+  "subtitle": "수요 구조와 유동성 변화를 통해 장기 채택 조건을 살펴본다.",
+  "date": "2026.09.03",
+  "hero_image": "art/bitcoin-logo.png"
 }
 ```
 
-프로젝트 이미지가 있으면 JSON과 같은 폴더 또는 그 하위 폴더에 넣고 `"hero_image": "art/project.png"`를 추가한다. 절대 경로, 상위 폴더로 나가는 경로, 원격 URL은 허용하지 않는다.
+프로젝트 이미지가 있으면 JSON과 같은 폴더 또는 그 하위 폴더에 넣고 `"hero_image": "art/project.png"`를 추가한다. 이미지는 비율을 유지한 채 잘림 없이 표시되며 템플릿이 색상이나 효과를 덧씌우지 않는다. 절대 경로, 상위 폴더로 나가는 경로, 원격 URL은 허용하지 않는다.
 
 ## 데이터 차트 필드
 

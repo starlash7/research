@@ -1,8 +1,9 @@
 {
   "template": "cover-object",
-  "slug": "stablecoin-payment-cover",
-  "category": "STABLECOINS",
-  "title": "스테이블코인은\n결제 인프라가 되는가",
-  "subtitle": "유동성과 정산 경로가 사용성을 결정한다.",
-  "date": "2026.09.01"
+  "slug": "bitcoin-reserve-cover",
+  "category": "BITCOIN OUTLOOK",
+  "title": "비트코인은\n준비자산이 되는가",
+  "subtitle": "수요 구조와 유동성 변화를 통해 장기 채택 조건을 살펴본다.",
+  "date": "2026.09.03",
+  "hero_image": "art/bitcoin-logo.png"
 }

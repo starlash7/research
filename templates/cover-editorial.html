@@ -9,7 +9,9 @@
     {% if author is defined and author %}<div class="meta-row editorial-byline"><span>{{ author }}</span></div>{% endif %}
   </section>
 
-  <div class="editorial-visual" aria-hidden="true"></div>
+  <div class="editorial-visual{% if hero_uri %} has-hero{% endif %}" aria-hidden="true">
+    {% if hero_uri %}<img class="cover-hero-image" src="{{ hero_uri }}" alt="">{% endif %}
+  </div>
 
   {% set footer_class = "cover-footer" %}
   {% set logo_treatment = "logo-on-light" %}

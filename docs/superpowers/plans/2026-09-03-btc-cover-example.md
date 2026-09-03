@@ -36,7 +36,7 @@
 - Consumes: `build_context(document: dict[str, Any], source_path: Path) -> dict[str, Any]`, which already exposes validated `hero_uri: str | None`.
 - Produces: optional `<img class="cover-hero-image">` markup in both covers, with `editorial-visual has-hero` on the light image wrapper and `object-stage` on the dark image wrapper.
 
-- [ ] **Step 1: Write failing template tests**
+- [x] **Step 1: Write failing template tests**
 
 Add tests that create a local placeholder `art/bitcoin-logo.png`, render both cover documents with `hero_image`, and assert that each HTML result contains one `cover-hero-image`, the local file URI, and no `atlas-media-frame`. Add a light fallback assertion proving that `editorial-visual` remains and no hero image is emitted when `hero_image` is absent. Add a stylesheet assertion for `object-fit: contain` and absence of `.atlas-media-frame`.
 
@@ -73,7 +73,7 @@ def test_cover_hero_css_contains_without_a_media_card(self):
     self.assertNotIn(".atlas-media-frame", styles)
 ```
 
-- [ ] **Step 2: Run the focused tests and confirm the expected failure**
+- [x] **Step 2: Run the focused tests and confirm the expected failure**
 
 Run:
 
@@ -86,7 +86,7 @@ Run:
 
 Expected: the shared-hero and CSS tests fail because the light template has no image markup, the dark template still has `atlas-media-frame`, and the current image CSS uses `object-fit: cover`.
 
-- [ ] **Step 3: Implement the minimum shared image markup**
+- [x] **Step 3: Implement the minimum shared image markup**
 
 Change the light visual to conditionally contain the supplied image while keeping the no-image fallback:
 
@@ -108,13 +108,13 @@ Change the dark visual to remove the nested frame:
 
 Keep the existing `.editorial-visual` fallback rules, add `.editorial-visual.has-hero` rules that remove its background and pseudo-elements, replace `.hero-image` with `.cover-hero-image`, set `object-fit: contain`, and delete `.atlas-media-frame`. Position the dark object within the safe area with a transparent wrapper and no border or background.
 
-- [ ] **Step 4: Run the focused tests and confirm they pass**
+- [x] **Step 4: Run the focused tests and confirm they pass**
 
 Run the Step 2 command.
 
 Expected: 3 tests pass.
 
-- [ ] **Step 5: Run the full suite**
+- [x] **Step 5: Run the full suite**
 
 Run:
 
@@ -139,7 +139,7 @@ Expected: all tests pass with 0 failures and 0 errors.
 - Consumes: the shared `hero_image` input contract and `cover-hero-image` markup from Task 1.
 - Produces: two runnable Bitcoin cover example JSON files that both reference `art/bitcoin-logo.png`.
 
-- [ ] **Step 1: Write failing asset and example tests**
+- [x] **Step 1: Write failing asset and example tests**
 
 Add an example test that checks the downloaded asset's exact SHA-256 hash and 1000x1000 dimensions, confirms both cover examples reference the same local file, and confirms the provenance note includes the source and raw download URLs.
 
@@ -155,18 +155,18 @@ def test_bitcoin_cover_examples_share_the_original_local_logo(self):
 
     self.assertEqual(
         hashlib.sha256(asset.read_bytes()).hexdigest(),
-        "b0231779b54f52e4352fa4300cb5353351bee8261f5d84b6e6ad8f6a2d24a1a4",
+        "04ff4557983ce40e58926548a1c0c62965b97b3d2570aed6ea48ead6120a4202",
     )
     self.assertEqual(png_size(asset), (1000, 1000))
     self.assertTrue(all(cover["hero_image"] == "art/bitcoin-logo.png" for cover in covers))
-    self.assertIn("https://github.com/bitpay/bitcoin-brand", provenance)
+    self.assertIn("https://github.com/BitcoinDesign/Guide", provenance)
     self.assertIn(
-        "https://raw.githubusercontent.com/bitpay/bitcoin-brand/master/bitcoin.png",
+        "https://raw.githubusercontent.com/BitcoinDesign/Guide/master/assets/images/guide/getting-started/visual-language/bitcoin-symbol.png",
         provenance,
     )
 ```
 
-- [ ] **Step 2: Run the focused test and confirm the expected failure**
+- [x] **Step 2: Run the focused test and confirm the expected failure**
 
 Run:
 
@@ -177,21 +177,21 @@ Run:
 
 Expected: error because `examples/art/bitcoin-logo.png` and its provenance note do not exist.
 
-- [ ] **Step 3: Add the source asset and provenance note**
+- [x] **Step 3: Add the source asset and provenance note**
 
-Download the 1000x1000 RGBA PNG from the Bitcoin Brand repository and verify its digest before use:
+Download the 1000x1000 RGBA PNG from the Bitcoin Design Guide repository and verify its digest before use:
 
 ```bash
 mkdir -p examples/art
 curl -L --fail --silent --show-error \
-  https://raw.githubusercontent.com/bitpay/bitcoin-brand/master/bitcoin.png \
+  https://raw.githubusercontent.com/BitcoinDesign/Guide/master/assets/images/guide/getting-started/visual-language/bitcoin-symbol.png \
   -o examples/art/bitcoin-logo.png
 shasum -a 256 examples/art/bitcoin-logo.png
 ```
 
-Write `examples/art/README.md` with the asset filename, source repository URL, exact raw download URL, SHA-256 digest, 1000x1000 size, RGBA format, and public-domain dedication stated by the source repository.
+Write `examples/art/README.md` with the asset filename, source guide and repository URLs, exact raw download URL, SHA-256 digest, 1000x1000 size, RGBA format, attribution, and the Creative Commons Attribution 4.0 license stated by the source repository.
 
-- [ ] **Step 4: Replace both example inputs with Bitcoin research content**
+- [x] **Step 4: Replace both example inputs with Bitcoin research content**
 
 Use this light example:
 
@@ -221,7 +221,7 @@ Use this dark example:
 }
 ```
 
-- [ ] **Step 5: Run the focused and full tests**
+- [x] **Step 5: Run the focused and full tests**
 
 Run:
 
@@ -250,11 +250,11 @@ Expected: the focused test passes, followed by the complete suite with 0 failure
 - Consumes: the two finished example JSON files and local Bitcoin logo.
 - Produces: documented reusable `hero_image` behavior plus visually inspected preview PNGs for user review.
 
-- [ ] **Step 1: Update the image-system documentation**
+- [x] **Step 1: Update the image-system documentation**
 
 State that both covers accept the same optional local `hero_image`. Document each fallback: light uses its UNIT TX Blue editorial circle when absent, dark leaves negative space. Update the cover JSON examples to include `hero_image` and the Bitcoin example copy. Keep the path-safety rules unchanged.
 
-- [ ] **Step 2: Validate text and source changes**
+- [x] **Step 2: Validate text and source changes**
 
 Run:
 
@@ -266,7 +266,7 @@ grep -RInE '—|–' examples/cover-editorial.json examples/cover-object.json te
 
 Expected: no whitespace errors, no em dash or en dash in visible cover inputs or templates, and all tests pass.
 
-- [ ] **Step 3: Render all examples**
+- [x] **Step 3: Render all examples**
 
 Run:
 
@@ -276,7 +276,7 @@ Run:
 
 Expected: four `[ok]` lines and `[done] 4 images`.
 
-- [ ] **Step 4: Verify cover dimensions and asset fidelity**
+- [x] **Step 4: Verify cover dimensions and asset fidelity**
 
 Run:
 
@@ -286,17 +286,17 @@ sips -g pixelWidth -g pixelHeight -g hasAlpha -g space examples/art/bitcoin-logo
 shasum -a 256 examples/art/bitcoin-logo.png
 ```
 
-Expected: both covers are 1440x756, the source asset is 1000x1000 with alpha, and its SHA-256 is `b0231779b54f52e4352fa4300cb5353351bee8261f5d84b6e6ad8f6a2d24a1a4`.
+Expected: both covers are 1440x756, the source asset is 1000x1000 with alpha, and its SHA-256 is `04ff4557983ce40e58926548a1c0c62965b97b3d2570aed6ea48ead6120a4202`.
 
-- [ ] **Step 5: Inspect both covers at original size**
+- [x] **Step 5: Inspect both covers at original size**
 
 Open both rendered PNGs at original resolution. Check title line breaks, category placement, untouched orange Bitcoin mark, clear negative space, no card or glow, black date at bottom left, one correctly treated UNIT TX lockup at bottom right, and no clipping or overlap. Adjust only the theme-specific image position or size if the visual balance fails, then repeat Steps 2 through 5.
 
-- [ ] **Step 6: Save stable review previews**
+- [x] **Step 6: Save stable review previews**
 
 Copy the verified covers to `.context/previews/btc-cover-light.png` and `.context/previews/btc-cover-dark.png` for the user's visual review.
 
-- [ ] **Step 7: Commit the verified implementation**
+- [x] **Step 7: Commit the verified implementation**
 
 ```bash
 git add \

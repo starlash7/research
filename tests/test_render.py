@@ -274,6 +274,39 @@ class HtmlTests(unittest.TestCase):
                 self.assertEqual(html.count('class="cover-category"'), 1)
                 self.assertIn("ONCHAIN &amp; RESEARCH", html)
 
+    def test_both_covers_render_a_local_hero_as_an_unframed_object(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            art = root / "art"
+            art.mkdir()
+            hero = art / "bitcoin-logo.png"
+            hero.write_bytes(b"local png placeholder")
+
+            for document in (
+                cover_document(hero_image="art/bitcoin-logo.png"),
+                object_cover_document(hero_image="art/bitcoin-logo.png"),
+            ):
+                with self.subTest(template=document["template"]):
+                    html = render_html(document, root / "cover.json")
+                    self.assertEqual(html.count('class="cover-hero-image"'), 1)
+                    self.assertIn(hero.resolve().as_uri(), html)
+                    self.assertNotIn("atlas-media-frame", html)
+
+    def test_light_cover_keeps_its_blue_fallback_without_a_hero(self):
+        html = render_html(cover_document(), Path("examples/cover-editorial.json"))
+
+        self.assertIn('class="editorial-visual"', html)
+        self.assertNotIn("cover-hero-image", html)
+
+    def test_cover_hero_css_contains_without_a_media_card(self):
+        styles = Path("assets/styles.css").read_text(encoding="utf-8")
+
+        self.assertRegex(
+            styles,
+            r"\.cover-hero-image\s*\{[^}]*object-fit: contain;",
+        )
+        self.assertNotIn(".atlas-media-frame", styles)
+
     def test_line_chart_context_contains_svg_points_and_ticks(self):
         document = data_document()
         document["chart"]["labels"] = ["1Y", "2Y", "3Y", "4Y", "5Y", "6Y"]
@@ -749,6 +782,29 @@ class ExampleTests(unittest.TestCase):
         self.assertEqual(
             hashlib.sha256(logo.read_bytes()).hexdigest(),
             "57718cc67c3b14bd92b1caf8253873612cac9a975e132d5c57b7aa948cd228e1",
+        )
+
+    def test_bitcoin_cover_examples_share_the_original_local_logo(self):
+        examples = Path(__file__).parents[1] / "examples"
+        asset = examples / "art" / "bitcoin-logo.png"
+        provenance = (examples / "art" / "README.md").read_text(encoding="utf-8")
+        covers = [
+            load_document(examples / "cover-editorial.json"),
+            load_document(examples / "cover-object.json"),
+        ]
+
+        self.assertEqual(
+            hashlib.sha256(asset.read_bytes()).hexdigest(),
+            "04ff4557983ce40e58926548a1c0c62965b97b3d2570aed6ea48ead6120a4202",
+        )
+        self.assertEqual(png_size(asset), (1000, 1000))
+        self.assertTrue(
+            all(cover["hero_image"] == "art/bitcoin-logo.png" for cover in covers)
+        )
+        self.assertIn("https://github.com/BitcoinDesign/Guide", provenance)
+        self.assertIn(
+            "https://raw.githubusercontent.com/BitcoinDesign/Guide/master/assets/images/guide/getting-started/visual-language/bitcoin-symbol.png",
+            provenance,
         )
 
     def test_example_set_covers_all_templates(self):
