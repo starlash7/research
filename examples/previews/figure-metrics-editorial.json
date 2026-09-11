@@ -1,0 +1,16 @@
+{
+  "template": "figure-metrics",
+  "variant": "editorial",
+  "focus_index": 0,
+  "slug": "lending-metrics-editorial-preview",
+  "title": "온체인 대출 시장 핵심 지표",
+  "period": "2026.08 말 기준",
+  "source": "Example data · replace before publishing",
+  "date": "2026.09.07",
+  "metrics": [
+    {"label": "전체 예치금", "value": 34.8, "unit": "십억 달러", "change": {"value": 3.9, "unit": "%", "period": "전월 대비"}},
+    {"label": "활성 대출", "value": 16.1, "unit": "십억 달러", "change": {"value": 5.9, "unit": "%", "period": "전월 대비"}},
+    {"label": "예치금 대비 대출 비율", "value": 46.3, "unit": "%", "change": {"value": 0.9, "unit": "%p", "period": "전월 대비"}},
+    {"label": "활성 차입자", "value": 128400, "unit": "개 주소", "change": {"value": -2.4, "unit": "%", "period": "전월 대비"}}
+  ]
+}

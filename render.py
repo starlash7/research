@@ -15,6 +15,8 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
+from figure_models import FIGURE_FIELDS, figure_context, text_field, validate_figure
+
 
 BASE = Path(__file__).resolve().parent
 ENV = Environment(
@@ -24,6 +26,28 @@ ENV = Environment(
 )
 DEFAULT_ACCENT = "#0064FF"
 SERIES_COLORS = (DEFAULT_ACCENT, "#123B7A", "#0C78B7")
+PALETTE_PREVIEWS = {
+    "vermillion": {"accent": "#E4492D", "data": "#E4492D", "text": "#B93822"},
+    "lime": {"accent": "#C7F542", "data": "#526B16", "text": "#526B16"},
+    "violet": {"accent": "#7546E8", "data": "#7546E8", "text": "#7546E8"},
+    "teal": {"accent": "#008F86", "data": "#008F86", "text": "#006E67"},
+    "magenta": {"accent": "#D62F8A", "data": "#D62F8A", "text": "#D62F8A"},
+    "amber": {"accent": "#F2B233", "data": "#A86B08", "text": "#8C5800"},
+    "burgundy": {"accent": "#8C2545", "data": "#8C2545", "text": "#8C2545"},
+    "forest": {"accent": "#1D684F", "data": "#1D684F", "text": "#1D684F"},
+    "coral": {"accent": "#F47568", "data": "#CC5045", "text": "#B64037"},
+    "copper": {"accent": "#B76E3C", "data": "#B76E3C", "text": "#925327"},
+    "indigo": {"accent": "#4338CA", "data": "#4338CA", "text": "#4338CA"},
+    "cyan": {"accent": "#00A6C8", "data": "#00809B", "text": "#006E85"},
+    "red": {"accent": "#D7263D", "data": "#D7263D", "text": "#D7263D"},
+    "orange": {"accent": "#F0781E", "data": "#C85C10", "text": "#AF4B08"},
+    "yellow": {"accent": "#EBCB20", "data": "#8D7900", "text": "#796700"},
+    "olive": {"accent": "#718044", "data": "#718044", "text": "#5B6833"},
+    "mint": {"accent": "#21B889", "data": "#008763", "text": "#007354"},
+    "blue": {"accent": "#0064FF", "data": "#0064FF", "text": "#0064FF"},
+    "navy": {"accent": "#183153", "data": "#183153", "text": "#183153"},
+    "slate": {"accent": "#64748B", "data": "#64748B", "text": "#64748B"},
+}
 
 
 @dataclass(frozen=True)
@@ -52,15 +76,19 @@ TEMPLATES = {
     "figure-data": TemplateSpec(
         "figure-data.html",
         (1440, 1200),
-        ("title", "source", "date", "chart", "takeaways"),
+        ("title", "source", "date", "chart"),
     ),
 }
+for name, fields in FIGURE_FIELDS.items():
+    TEMPLATES[name] = TemplateSpec(f"{name}.html", (1440, 1200), ("title", "source", "date", *fields))
+DATA_TEMPLATES = {"figure-data", *FIGURE_FIELDS}
 TEXT_FIELDS = {
     "cover-editorial": ("category", "title", "subtitle", "date"),
     "cover-object": ("category", "title", "subtitle", "date"),
     "figure-framework": ("title", "source", "date"),
     "figure-data": ("title", "source", "date"),
 }
+TEXT_FIELDS.update({name: ("title", "source", "date") for name in FIGURE_FIELDS})
 
 
 def load_document(path: Path) -> dict[str, Any]:
@@ -99,10 +127,13 @@ def _validate_chart(chart: Any) -> None:
     labels = chart.get("labels")
     series = chart.get("series")
     _require_text(chart, "unit")
-    if not isinstance(labels, list) or not 2 <= len(labels) <= 12:
-        raise ValueError("chart.labels는 2-12개여야 합니다")
+    limit = 366 if chart["type"] == "line" else 12
+    if not isinstance(labels, list) or not 2 <= len(labels) <= limit:
+        raise ValueError(f"chart.labels는 2-{limit}개여야 합니다")
     if not all(isinstance(label, str) and label.strip() for label in labels):
         raise ValueError("chart.labels는 비어 있지 않은 텍스트여야 합니다")
+    for label in labels:
+        text_field(label, "chart.label", 8 if chart["type"] == "bar" and len(labels) > 6 else 16)
     if not isinstance(series, list) or not 1 <= len(series) <= 3:
         raise ValueError("chart.series는 1-3개여야 합니다")
     all_values = []
@@ -111,6 +142,7 @@ def _validate_chart(chart: Any) -> None:
             raise ValueError("각 chart.series는 객체여야 합니다")
         if not isinstance(item.get("name"), str) or not item["name"].strip():
             raise ValueError("각 chart.series에는 비어 있지 않은 name이 필요합니다")
+        text_field(item["name"], "chart.series.name", 22)
         values = item.get("values")
         if not isinstance(values, list) or len(values) != len(labels):
             raise ValueError("각 chart.series values 수는 labels 수와 같아야 합니다")
@@ -144,6 +176,10 @@ def _validate_chart(chart: Any) -> None:
         raise ValueError("chart.y_min과 y_max 범위에 모든 값이 포함되어야 합니다")
     if "y_max" in chart and max(all_values) > float(chart["y_max"]):
         raise ValueError("chart.y_min과 y_max 범위에 모든 값이 포함되어야 합니다")
+    lower, upper = _axis_bounds(chart)
+    tick_values = [upper - (upper - lower) * index / 4 for index in range(5)]
+    if any(len(_number_label(value, "")) > 7 for value in [*all_values, lower, upper, *tick_values]):
+        raise ValueError("chart 수치가 너무 깁니다. 단위를 조정해 표시 수치를 7자 이내로 줄이세요")
 
 
 def validate_document(document: dict[str, Any]) -> TemplateSpec:
@@ -160,6 +196,15 @@ def validate_document(document: dict[str, Any]) -> TemplateSpec:
 
     text = {key: _require_text(document, key) for key in TEXT_FIELDS[template_name]}
     title = text["title"]
+    if template_name in DATA_TEMPLATES:
+        if title.count("\n") > 1:
+            raise ValueError("데이터 제목은 최대 두 줄까지 사용할 수 있습니다")
+        for line in title.splitlines():
+            text_field(line, "title", 44)
+        text_field(text["source"], "source", 150)
+        text_field(text["date"], "date", 16)
+        if "period" in document:
+            text_field(document["period"], "period", 66)
     if template_name.startswith("cover-"):
         if _display_width(text["category"]) > 24:
             raise ValueError("cover category는 영문 24자 폭 이하여야 합니다")
@@ -188,15 +233,42 @@ def validate_document(document: dict[str, Any]) -> TemplateSpec:
 
     if template_name == "figure-data":
         _validate_chart(document["chart"])
-        takeaways = document["takeaways"]
-        if not isinstance(takeaways, list) or not 1 <= len(takeaways) <= 3:
-            raise ValueError("takeaways는 1-3개여야 합니다")
+        text_field(document["chart"]["unit"], "chart.unit", 24)
+        takeaways = document.get("takeaways", [])
+        if not isinstance(takeaways, list) or not 0 <= len(takeaways) <= 3:
+            raise ValueError("takeaways는 0-3개여야 합니다")
         for item in takeaways:
             if not isinstance(item, dict):
                 raise ValueError("각 takeaway는 객체여야 합니다")
             for key in ("label", "value"):
                 if not isinstance(item.get(key), str) or not item[key].strip():
                     raise ValueError(f"각 takeaway에는 비어 있지 않은 {key} 텍스트가 필요합니다")
+
+    validate_figure(document)
+
+    if "variant" in document:
+        if document["variant"] != "editorial" or template_name not in {"figure-data", "figure-metrics"}:
+            raise ValueError("variant는 figure-data 또는 figure-metrics의 editorial 시안만 지원합니다")
+        if template_name == "figure-data" and document["chart"]["type"] != "line":
+            raise ValueError("editorial 차트 시안은 line만 지원합니다")
+    if "focus_index" in document:
+        if document.get("variant") != "editorial":
+            raise ValueError("focus_index는 variant: editorial에서만 사용할 수 있습니다")
+        items = document["chart"]["series"] if template_name == "figure-data" else document["metrics"]
+        index = document["focus_index"]
+        if type(index) is not int or not 0 <= index < len(items):
+            raise ValueError("focus_index는 0부터 시작하는 유효한 대상 번호여야 합니다")
+
+    if "palette_preview" in document:
+        palette = document["palette_preview"]
+        if not isinstance(palette, str) or palette not in PALETTE_PREVIEWS:
+            raise ValueError(f"palette_preview는 {', '.join(PALETTE_PREVIEWS)} 중 하나여야 합니다")
+        if template_name != "cover-editorial" and not (
+            template_name == "figure-data" and document.get("variant") == "editorial"
+        ):
+            raise ValueError("palette_preview는 밝은 커버와 editorial 추세 시안만 지원합니다")
+        if "accent" in document:
+            raise ValueError("palette_preview와 accent를 동시에 지정할 수 없습니다")
 
     return spec
 
@@ -236,15 +308,16 @@ def _number_label(value: float, unit: str) -> str:
     return f"{number}{unit}"
 
 
-def _chart_context(chart: dict[str, Any]) -> dict[str, Any]:
+def _chart_context(chart: dict[str, Any], compact: bool = False, editorial: bool = False) -> dict[str, Any]:
     result = deepcopy(chart)
-    width, height = 1304, 630
-    left, right_edge, top, bottom = 92, 1276, 42, 78
+    width, height = 1264, 470 if compact else (680 if editorial else 640)
+    dense_bar = chart["type"] == "bar" and len(chart["labels"]) > 6
+    left, right_edge, top, bottom = 125, 1000 if editorial else 1100, 38, 110 if dense_bar else 64
     plot_width = right_edge - left
     plot_height = height - top - bottom
     y_min, y_max = _axis_bounds(chart)
     y_span = y_max - y_min
-    unit = str(chart.get("unit") or "")
+    unit = ""  # Units are displayed once in the shared figure header.
 
     def y_position(value: float) -> float:
         return round(top + (y_max - value) / y_span * plot_height, 2)
@@ -289,7 +362,7 @@ def _chart_context(chart: dict[str, Any]) -> dict[str, Any]:
                         "y": y,
                         "label_y": round(label_y, 2),
                         "label": _number_label(float(value), unit),
-                        "show_label": len(labels) <= 8 or index in {0, len(labels) - 1},
+                        "show_label": index == len(labels) - 1,
                     }
                 )
             series["points"] = points
@@ -311,11 +384,11 @@ def _chart_context(chart: dict[str, Any]) -> dict[str, Any]:
                         "x": round(x + 2, 2),
                         "y": round(y, 2),
                         "width": round(max(bar_width - 4, 2), 2),
-                        "height": round(max(bar_height, 1), 2),
+                        "height": round(bar_height, 2),
                         "label_x": round(x + bar_width / 2, 2),
-                        "label_y": round(max(y - 14 - series_index * 18, 19), 2),
+                        "label_y": round(value_y + 26 if value < 0 else max(y - 14 - series_index * 18, 19), 2),
                         "label": _number_label(float(value), unit),
-                        "show_label": len(labels) <= 8 or index in {0, len(labels) - 1},
+                        "show_label": len(labels) <= 6 and len(chart["series"]) == 1,
                     }
                 )
             series["points"] = []
@@ -323,16 +396,32 @@ def _chart_context(chart: dict[str, Any]) -> dict[str, Any]:
             series["bars"] = bars
         enriched_series.append(series)
 
+    if chart["type"] == "line":
+        # Space end labels independently of the data points, including ties.
+        ends = sorted((series["points"][-1] for series in enriched_series), key=lambda point: point["y"])
+        label_gap = 52 if editorial else 34
+        for index, point in enumerate(ends):
+            point["end_label_y"] = max(point["y"], ends[index - 1]["end_label_y"] + label_gap if index else 24)
+        overflow = max(0, ends[-1]["end_label_y"] - (height - bottom))
+        for point in ends:
+            point["end_label_y"] -= overflow
+
+    tick_count = min(len(labels), 6)
+    tick_indices = (
+        range(len(labels)) if chart["type"] == "bar" else
+        sorted({round(index * (len(labels) - 1) / (tick_count - 1)) for index in range(tick_count)})
+    )
     result.update(
         {
             "width": width,
             "height": height,
             "left": left,
             "right_edge": right_edge,
+            "dense_bar": dense_bar,
             "ticks": ticks,
             "x_labels": [
-                {"x": x_positions[index], "label": label}
-                for index, label in enumerate(labels)
+                {"x": x_positions[index], "label": labels[index]}
+                for index in tick_indices
             ],
             "series": enriched_series,
             "y_min": y_min,
@@ -366,19 +455,33 @@ def _hero_uri(document: dict[str, Any], source_path: Path) -> str | None:
 
 def build_context(document: dict[str, Any], source_path: Path) -> dict[str, Any]:
     spec = validate_document(document)
+    preview_palette = PALETTE_PREVIEWS.get(document.get("palette_preview"))
     context = deepcopy(document)
     context.update(
         {
             "width": spec.size[0],
             "height": spec.size[1],
-            "accent": document.get("accent") or DEFAULT_ACCENT,
+            "accent": preview_palette["accent"] if preview_palette else document.get("accent") or DEFAULT_ACCENT,
+            "preview_palette": preview_palette,
             "assets_uri": (BASE / "assets").resolve().as_uri(),
             "hero_uri": _hero_uri(document, source_path),
             "highlight": document.get("highlight"),
+            "period": document.get("period"),
+            "editorial": document.get("variant") == "editorial",
+            "focus_index": document.get("focus_index"),
         }
     )
     if document["template"] == "figure-data":
-        context["chart"] = _chart_context(document["chart"])
+        context["takeaways"] = document.get("takeaways", [])
+        context["chart"] = _chart_context(document["chart"], compact=bool(context["takeaways"]), editorial=context["editorial"])
+        if context["editorial"]:
+            focus_color = preview_palette["data"] if preview_palette else DEFAULT_ACCENT
+            for index, series in enumerate(context["chart"]["series"]):
+                series["color"] = focus_color if index == context["focus_index"] else "#8B95A1"
+        context["figure_unit"] = document["chart"]["unit"]
+    elif document["template"] in FIGURE_FIELDS:
+        context.update(figure_context(document))
+        context["figure_unit"] = document.get("unit")
     return context
 
 

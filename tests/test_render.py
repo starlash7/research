@@ -210,6 +210,14 @@ class ValidationTests(unittest.TestCase):
 
 
 class DocumentationTests(unittest.TestCase):
+    def test_official_blue_decision_is_recorded(self):
+        for name in ("AGENTS.md", "goal.md", "README.md", "docs/IMAGE_SYSTEM.md"):
+            with self.subTest(path=name):
+                text = Path(name).read_text(encoding="utf-8")
+                self.assertTrue(all(token in text for token in (
+                    "2026.09.11", "공식 키컬러", "#0064FF", "확정",
+                )), name)
+
     def test_goal_defines_clone_and_data_only_workflow(self):
         goal = Path("goal.md").read_text(encoding="utf-8")
         for phrase in ("clone", "자료와 데이터", "일관된", "render.py"):
@@ -480,7 +488,7 @@ class HtmlTests(unittest.TestCase):
                 for copy in forbidden:
                     self.assertNotIn(copy, html)
 
-    def test_all_dates_use_exact_black_text(self):
+    def test_dates_use_surface_specific_text_colors(self):
         styles = Path("assets/styles.css").read_text(encoding="utf-8")
         self.assertIn("--date-on-light: #000000;", styles)
         self.assertNotIn("--date-on-dark", styles)
@@ -490,7 +498,7 @@ class HtmlTests(unittest.TestCase):
         )
         self.assertRegex(
             styles,
-            r"\.object-footer \.fixed-date\s*\{[^}]*color: var\(--date-on-light\);[^}]*background: #ffffff;",
+            r"\.object-footer \.fixed-date\s*\{\s*color: #ffffff;\s*\}",
         )
 
     def test_information_cards_use_the_rounder_shared_radius(self):
@@ -516,11 +524,13 @@ class HtmlTests(unittest.TestCase):
         self.assertIn("right: 6%;", styles)
         self.assertIn("bottom: 6%;", styles)
 
-    def test_all_templates_include_the_shared_fixed_footer_partial(self):
-        for template in ("cover-editorial", "cover-object", "figure-data", "figure-framework"):
-            source = Path("templates", f"{template}.html").read_text(encoding="utf-8")
-            with self.subTest(template=template):
-                self.assertIn('{% include "partials/fixed-footer.html" %}', source)
+    def test_all_examples_render_one_shared_fixed_footer(self):
+        for path in sorted(Path("examples").glob("*.json")):
+            with self.subTest(example=path.name):
+                html = render_html(load_document(path), path)
+                self.assertEqual(html.count('<footer class="fixed-footer'), 1)
+                self.assertEqual(html.count('class="fixed-date num"'), 1)
+                self.assertEqual(html.count("unit-tx-logo.png"), 1)
 
     def test_framework_renders_nodes_and_connectors(self):
         html = render_html(framework_document(), Path("examples/figure-framework.json"))
@@ -814,6 +824,19 @@ class ExampleTests(unittest.TestCase):
         self.assertEqual({document["template"] for document in documents}, set(TEMPLATES))
         for document in documents:
             validate_document(document)
+
+    def test_official_examples_use_blue_without_palette_overrides(self):
+        examples = Path(__file__).parents[1] / "examples"
+        paths = select_sources(None, True, examples) + sorted((examples / "previews").glob("*.json"))
+        for path in paths:
+            with self.subTest(path=path.name):
+                document = load_document(path)
+                self.assertNotIn("palette_preview", document)
+                self.assertEqual(document.get("accent", DEFAULT_ACCENT), "#0064FF")
+                context = build_context(document, path)
+                self.assertEqual(context["accent"], "#0064FF")
+                for series in context.get("chart", {}).get("series", []):
+                    self.assertIn(series["color"], (*SERIES_COLORS, "#8B95A1"))
 
     def test_visible_example_copy_has_no_em_or_en_dash(self):
         examples = Path(__file__).parents[1] / "examples"

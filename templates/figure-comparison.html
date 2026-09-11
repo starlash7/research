@@ -1,0 +1,14 @@
+{% extends "data-base.html" %}
+{% block figure_body %}
+<div class="comparison-frame">
+  <table class="comparison-table{% if columns|length == 4 %} is-wide{% endif %}">
+    <colgroup><col class="comparison-key">{% for column in columns %}<col>{% endfor %}</colgroup>
+    <thead><tr><th scope="col"><span class="sr-only">비교 항목</span></th>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for row in rows %}
+      <tr><th scope="row">{{ row.label }}</th>{% for value in row["values"] %}<td>{{ value }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

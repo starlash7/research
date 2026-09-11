@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block canvas %}
+<main class="canvas research-figure{% if editorial %} editorial-figure{% endif %}">
+  <header class="research-header">
+    <h1 class="research-title">{{ title }}</h1>
+    {% if period or figure_unit %}
+    <div class="research-meta">
+      {% if period %}<span>{{ period }}</span>{% endif %}
+      {% if figure_unit %}<span>단위: {{ figure_unit }}</span>{% endif %}
+    </div>
+    {% endif %}
+    {% if editorial %}<div class="editorial-rule" aria-hidden="true"></div>{% endif %}
+  </header>
+  <section class="research-body" aria-label="{{ title }}">
+    {% block figure_body %}{% endblock %}
+  </section>
+  <p class="research-source">Source: {{ source }}</p>
+  {% set footer_class = "figure-footer research-footer" %}
+  {% set logo_treatment = "logo-on-light" %}
+  {% include "partials/fixed-footer.html" %}
+</main>
+{% endblock %}

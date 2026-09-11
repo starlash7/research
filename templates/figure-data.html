@@ -1,37 +1,37 @@
-{% extends "base.html" %}
-{% block canvas %}
-<main class="canvas figure-canvas">
-  <header class="figure-header">
-    <h1 class="figure-title">{% if highlight %}<span class="highlight">{{ highlight }}</span> {% endif %}{{ title }}</h1>
-    <p class="source-line">Source: {{ source }}</p>
-  </header>
-
+{% extends "data-base.html" %}
+{% block figure_body %}
   <section class="data-legend" aria-label="Chart legend">
     {% for series in chart.series %}
-      <span class="legend-item{% if series.dash %} is-dashed{% endif %}" style="--series-color: {{ series.color }}">
-        <span class="legend-swatch"></span>
+      <span class="legend-item{% if editorial and loop.index0 == focus_index %} is-focus{% endif %}" style="--series-color: {{ series.color }}">
+        <svg class="legend-swatch" viewBox="0 0 42 8" aria-hidden="true"><line x1="2" x2="40" y1="4" y2="4" stroke="{{ series.color }}" stroke-width="4"{% if series.dash %} stroke-dasharray="{{ series.dash }}"{% endif %}></line></svg>
         <span>{{ series.name }}</span>
       </span>
     {% endfor %}
   </section>
 
-  <section class="chart-wrap" aria-label="{{ title }} chart">
     <svg class="chart-svg" viewBox="0 0 {{ chart.width }} {{ chart.height }}" role="img" aria-label="{{ title }}">
       {% for tick in chart.ticks %}
         <line class="chart-grid" x1="{{ chart.left }}" x2="{{ chart.right_edge }}" y1="{{ tick.y }}" y2="{{ tick.y }}"></line>
-        <text class="axis-label num" x="{{ chart.left - 18 }}" y="{{ tick.y + 7 }}" text-anchor="end">{{ tick.label }}</text>
+        <text class="axis-label num" x="{{ chart.left - 20 }}" y="{{ tick.y + 8 }}" text-anchor="end">{{ tick.label }}</text>
       {% endfor %}
       {% for label in chart.x_labels %}
+        {% if chart.dense_bar %}
+        <text class="axis-label dense-axis" x="{{ label.x }}" y="{{ chart.height - 65 }}" text-anchor="end" transform="rotate(-35 {{ label.x }} {{ chart.height - 65 }})">{{ label.label }}</text>
+        {% else %}
         <text class="axis-label" x="{{ label.x }}" y="{{ chart.height - 18 }}" text-anchor="middle">{{ label.label }}</text>
+        {% endif %}
       {% endfor %}
 
       {% if chart.type == "line" %}
         {% for series in chart.series %}
-          <polyline class="series-line" style="--series-color: {{ series.color }};{% if series.dash %}stroke-dasharray: {{ series.dash }};{% endif %}" points="{{ series.polyline }}"></polyline>
-          {% for point in series.points %}
-            <circle class="series-point" style="--series-color: {{ series.color }}" cx="{{ point.x }}" cy="{{ point.y }}" r="7"></circle>
-            {% if point.show_label %}<text class="point-value num" style="--series-color: {{ series.color }}" x="{{ point.x }}" y="{{ point.label_y }}">{{ point.label }}</text>{% endif %}
-          {% endfor %}
+          <polyline class="series-line{% if editorial and loop.index0 == focus_index %} is-focus{% endif %}" style="--series-color: {{ series.color }};{% if series.dash %}stroke-dasharray: {{ series.dash }};{% endif %}" points="{{ series.polyline }}"></polyline>
+          {% set point = series.points[-1] %}
+          <g{% if editorial and loop.index0 == focus_index %} class="is-focus"{% endif %} style="--series-color: {{ series.color }}">
+            {% if editorial and loop.index0 == focus_index %}<circle class="focus-halo" cx="{{ point.x }}" cy="{{ point.y }}" r="17"></circle>{% endif %}
+            <circle class="series-point" cx="{{ point.x }}" cy="{{ point.y }}" r="6"></circle>
+            <line class="end-leader" x1="{{ point.x + 10 }}" y1="{{ point.y }}" x2="{{ point.x + 30 }}" y2="{{ point.end_label_y }}"></line>
+            <text class="point-value end-value num" x="{{ point.x + 40 }}" y="{{ point.end_label_y + 9 }}">{{ point.label }}</text>
+          </g>
         {% endfor %}
       {% else %}
         {% for series in chart.series %}
@@ -42,8 +42,7 @@
         {% endfor %}
       {% endif %}
     </svg>
-  </section>
-
+  {% if takeaways %}
   <section class="takeaway-grid" style="--takeaway-count: {{ takeaways|length }}">
     {% for item in takeaways %}
       <article class="takeaway">
@@ -52,9 +51,5 @@
       </article>
     {% endfor %}
   </section>
-
-  {% set footer_class = "figure-footer" %}
-  {% set logo_treatment = "logo-on-light" %}
-  {% include "partials/fixed-footer.html" %}
-</main>
+  {% endif %}
 {% endblock %}

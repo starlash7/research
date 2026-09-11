@@ -1,0 +1,23 @@
+{% extends "data-base.html" %}
+{% block figure_body %}
+<div class="composition-groups">
+  {% for group in composition_groups %}
+  <section class="composition-group" aria-label="{{ group.label }}">
+    <h2>{{ group.label }}</h2>
+    <div class="composition-track" aria-hidden="true">
+      {% for segment in group.segments %}
+      <span style="width: {{ segment.value }}%; background: {{ segment.color }}"></span>
+      {% endfor %}
+    </div>
+    <div class="composition-labels" style="--category-count: {{ categories|length }}">
+      {% for segment in group.segments %}
+      <div class="composition-label">
+        <span class="composition-name"><i style="background: {{ segment.color }}" aria-hidden="true"></i>{{ segment.name }}</span>
+        <strong class="num">{{ segment.formatted }}%</strong>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

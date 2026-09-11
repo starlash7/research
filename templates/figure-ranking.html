@@ -1,0 +1,15 @@
+{% extends "data-base.html" %}
+{% block figure_body %}
+<svg class="ranking-svg" viewBox="0 0 1264 660" role="img" aria-label="{{ title }}">
+  {% for tick in ranking_ticks %}
+    <line class="chart-grid" x1="{{ tick.x }}" x2="{{ tick.x }}" y1="18" y2="582"></line>
+    <text class="axis-label num" x="{{ tick.x }}" y="628" text-anchor="middle">{{ tick.label }}</text>
+  {% endfor %}
+  <line class="zero-line" x1="{{ ranking_zero }}" x2="{{ ranking_zero }}" y1="18" y2="582"></line>
+  {% for item in ranked_items %}
+    <text class="ranking-label" x="0" y="{{ item.y + 29 }}">{{ item.label }}</text>
+    <rect class="ranking-bar" x="{{ item.x }}" y="{{ item.y }}" width="{{ item.width }}" height="40" rx="6"></rect>
+    <text class="ranking-value num" x="1260" y="{{ item.y + 30 }}" text-anchor="end">{{ item.formatted }}</text>
+  {% endfor %}
+</svg>
+{% endblock %}

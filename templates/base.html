@@ -9,11 +9,15 @@
       --canvas-width: {{ width }}px;
       --canvas-height: {{ height }}px;
       --accent: {{ accent }};
+      {% if preview_palette %}
+      --preview-data: {{ preview_palette.data }};
+      --preview-text: {{ preview_palette.text }};
+      {% endif %}
     }
   </style>
   <title>{{ title }}</title>
 </head>
-<body>
+<body{% if preview_palette %} class="palette-preview"{% endif %}>
   {% block canvas %}{% endblock %}
 </body>
 </html>

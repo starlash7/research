@@ -1,0 +1,14 @@
+{% extends "data-base.html" %}
+{% block figure_body %}
+<div class="metrics-grid">
+  {% for metric in metrics %}
+  <article class="metric-card{% if editorial and loop.index0 == focus_index %} is-focus{% endif %}">
+    <h2>{{ metric.label }}</h2>
+    <div class="metric-number"><strong class="num">{{ metric.formatted }}</strong><span>{{ metric.unit }}</span></div>
+    {% if metric.change is defined %}
+    <p class="metric-change"><strong class="num">{{ metric.change.formatted }}{{ metric.change.unit }}</strong><span>{{ metric.change.period }}</span></p>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

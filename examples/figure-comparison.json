@@ -1,0 +1,17 @@
+{
+  "template": "figure-comparison",
+  "slug": "lending-comparison-example",
+  "title": "대출 프로토콜 구조 비교",
+  "period": "2026.08 말 기준",
+  "source": "Example data · replace before publishing",
+  "date": "2026.09.07",
+  "columns": ["프로토콜 A", "프로토콜 B", "프로토콜 C"],
+  "rows": [
+    {"label": "시장 구조", "values": ["공유 풀", "독립 시장", "만기별 풀"]},
+    {"label": "담보 방식", "values": ["초과 담보", "초과 담보", "초과 담보"]},
+    {"label": "대출 금리", "values": ["변동 금리", "변동 금리", "고정 금리"]},
+    {"label": "리스크 설정", "values": ["프로토콜 단위", "시장 단위", "풀 단위"]},
+    {"label": "만기", "values": ["없음", "없음", "고정 만기"]},
+    {"label": "예치금 (십억 달러)", "values": ["14.2", "8.6", "5.1"]}
+  ]
+}

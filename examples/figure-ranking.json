@@ -1,0 +1,17 @@
+{
+  "template": "figure-ranking",
+  "slug": "lending-ranking-example",
+  "title": "프로토콜별 예치금 비교",
+  "period": "2026.08 말 기준",
+  "source": "Example data · replace before publishing",
+  "date": "2026.09.07",
+  "unit": "십억 달러",
+  "items": [
+    {"label": "프로토콜 A", "value": 14.2},
+    {"label": "프로토콜 B", "value": 8.6},
+    {"label": "프로토콜 C", "value": 5.1},
+    {"label": "프로토콜 D", "value": 3.4},
+    {"label": "프로토콜 E", "value": 2.1},
+    {"label": "기타", "value": 1.4}
+  ]
+}
